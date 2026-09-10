@@ -90,8 +90,7 @@ Vitest.test.each([
 
 Vitest.test("save and load player", () => {
     const player = Player.getDefaultPlayer();
-
-    Player.save(player);
+    player.save();
     const loadedPlayer = Player.load();
     Vitest.expect(loadedPlayer).toEqual(player);
 });

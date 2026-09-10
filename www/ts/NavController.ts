@@ -1,4 +1,5 @@
 import Player from './Player.js';
+import Players from './Players.js';
 import type { OnsCarouselElement as CarouselElement } from '../lib/onsenui';
 
 export default class NavController{
@@ -32,13 +33,13 @@ export default class NavController{
             const target = event.target;
 
             // Preserve typing and cursor movement in editable fields.
-            if (
-                target instanceof HTMLElement &&
-                (target.matches("input, textarea, select") ||
-                    target.isContentEditable)
-            ) {
-                return;
-            }
+            // if (
+            //     target instanceof HTMLElement &&
+            //     (target.matches("input, textarea, select") ||
+            //         target.isContentEditable)
+            // ) {
+            //     return;
+            // }
 
             if (event.key === "ArrowRight") {
                 event.preventDefault();
@@ -73,19 +74,19 @@ export default class NavController{
                 console.error("Player form fields not found.");
                 return;
             }
-
-            const player = Player.load();
-
+            
             const name = playerNameInput.value;
             const email = playerEmailInput.value;
 
-            if (player && Player.samePlayer(name, email, player)) {
-                console.log("Player already saved, no need to save again.");
-                return;
-            }
+            const player = new Player(name, email);
+            const players = new Players();
+            players.addPlayer(player);
+            players.addDefaultPlayers();
 
-            console.log(name, email);
-            Player.save(new Player(name, email));
+            players.savePlayersToSessionStorage();
+            console.log("Players saved to session storage:", JSON.stringify(players.players));
+
+            player.save();
         } 
 
         // Use these values to query your data.
