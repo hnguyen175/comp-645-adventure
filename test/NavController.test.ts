@@ -3,6 +3,7 @@
 import * as Vitest from 'vitest';
 import NavController from '../www/ts/NavController';
 import PlayerService from '../www/ts/PlayerService';
+import Players from '../www/ts/Players';
 
 Vitest.beforeEach(() => {
     // Clear the document body before each test
@@ -121,7 +122,7 @@ Vitest.test("onCarouselPlayersPreChange retrieves the active carousel item", () 
         activeIndex: 1,
     });
 
-    Vitest.vi.spyOn(PlayerService, 'savePlayers').mockImplementation(() => {});
+    Vitest.vi.spyOn(PlayerService, 'savePlayers').mockImplementation(() : Players => {return new Players();});
 
     NavController.onCarouselPlayersPreChange(event);
 

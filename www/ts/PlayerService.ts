@@ -2,7 +2,7 @@ import Player from './Player.js';
 import Players from './Players.js';
 
 export default class PlayerService {
-    static savePlayers(name: string, email: string): void {
+    static savePlayers(name: string, email: string): Players {
         const player = new Player(name, email);
 
         const players = new Players();
@@ -11,6 +11,8 @@ export default class PlayerService {
 
         players.savePlayersToSessionStorage();
         player.save();
+
+        return players;
     }
 
     static loadMainPlayer(): Player | null {

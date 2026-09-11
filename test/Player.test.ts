@@ -16,17 +16,17 @@ Vitest.test("0 strength", () => {
     Vitest.expect(player.email).toBe("a@b.c");
     Vitest.expect(player.name).toBe("John Doe");
 
-    Vitest.expect(player.strength).toBeGreaterThan(0)
-    Vitest.expect(player.strength).toBeLessThanOrEqual(100);
+    Vitest.expect(player.str).toBeGreaterThan(0)
+    Vitest.expect(player.str).toBeLessThanOrEqual(100);
     Vitest.expect(player.hp).toBeGreaterThan(0);
     Vitest.expect(player.hp).toBeLessThanOrEqual(100);
-    Vitest.expect(player.speed).toBeGreaterThan(0);
-    Vitest.expect(player.speed).toBeLessThanOrEqual(100);
+    Vitest.expect(player.spd).toBeGreaterThan(0);
+    Vitest.expect(player.spd).toBeLessThanOrEqual(100);
     Vitest.expect(player.mp).toBeGreaterThan(0);
     Vitest.expect(player.mp).toBeLessThanOrEqual(100);
     Vitest.expect(player.luk).toBeGreaterThan(0);
     Vitest.expect(player.luk).toBeLessThanOrEqual(10);
-    Vitest.expect(Player.arrWeapons).contains(player.weapon);
+    Vitest.expect(Player.arrWeapons).contains(player.wep);
     Vitest.expect(Player.arrClasses).contains(player.cls);
 });
 
@@ -38,7 +38,7 @@ Vitest.test("randomizeStrength returns a number between 25 and 100", () => {
 
     for (let i = 0; i < 100; i++) {
         const player = new Player("John Doe", "a@b.c");
-        const strength = player.strength;
+        const strength = player.str;
 
         Vitest.expect(strength).toBeGreaterThanOrEqual(25);
         Vitest.expect(strength).toBeLessThanOrEqual(100);
@@ -59,7 +59,7 @@ Vitest.test("randomizeStrength returns a number between 25 and 100", () => {
     Vitest.expect(hundredStrengths).toBeGreaterThan(0);
 });
 
-Vitest.describe.each(["strength", "hp", "speed"] as const)("Player.%s", (property) => {
+Vitest.describe.each(["str", "hp", "spd"] as const)("Player.%s", (property) => {
     Vitest.test.each([
         [0.11, 25],
         [0.251, 50],
@@ -71,7 +71,7 @@ Vitest.describe.each(["strength", "hp", "speed"] as const)("Player.%s", (propert
         Vitest.expect(player[property]).toBe(expectedStrength);
         Vitest.expect(player.email).toBeDefined();
         Vitest.expect(Player.arrNames).toContain(player.name);
-        Vitest.expect(Player.arrWeapons).toContain(player.weapon);
+        Vitest.expect(Player.arrWeapons).toContain(player.wep);
         Vitest.expect(Player.arrClasses).toContain(player.cls);
     });
 });

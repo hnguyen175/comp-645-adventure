@@ -1,6 +1,8 @@
 import Player from "./Player.js";
+
 export default class Players {
-    players: Array<Player> = [];
+    players: Player[];
+
     constructor() {
         this.players = [];
     }

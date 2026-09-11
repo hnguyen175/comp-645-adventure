@@ -1,10 +1,10 @@
 type PlayerStats = {
     hp: number;
-    speed: number;
-    strength: number;
+    str: number;
+    spd: number;
     mp: number;
     luk: number;
-    weapon: string;
+    wep: string;
     cls: string;
 };
 
@@ -12,11 +12,11 @@ export default class Player {
     name: string;
     email: string;
     hp: number = 0;
-    speed: number = 0;
-    strength: number = 0;
+    str: number = 0;
+    spd: number = 0;
     mp: number = 0;
     luk: number = 0;
-    weapon: string = "";
+    wep: string = "";
     cls: string = "";
     static arrNames = ["Abakor", "Bandala", "Cartin", "Darianne", "Fezzor", "Gizleeni", "Halor", "Ia", "Jeepenn", "Kalindaa", "Lineuss", "Mordana", "Nazzor", "Ortery", "Parto", "Quey", "Rato", "Salana", "Torqq", "Uvala", "Vixtor", "Wylia", "Xex", "Yala", "Zetch"] as const;
     static arrWeapons = ["Rocks", "Staff", "Dagger", "Mace", "Warhammer", "Sword", "Battle Axe"] as const;
@@ -73,11 +73,11 @@ export default class Player {
     private static randomStats() : PlayerStats {
         return {
             hp: Player.randomStat(),
-            speed: Player.randomStat(),
-            strength: Player.randomStat(),
+            spd: Player.randomStat(),
+            str: Player.randomStat(),
             mp: Player.randomMp(),
             luk: Player.randomLuk(),
-            weapon: Player.randomWeapon(),
+            wep: Player.randomWeapon(),
             cls: Player.randomClass(),
         };
     }

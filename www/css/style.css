@@ -1,8 +1,9 @@
 section {background-color: brown;margin-bottom:100px;display: none; color: white; padding: 10px; border-radius: 8px;}
-body {font-size: 110%;text-align:center;}
+body {text-align:center;}
 
-ons-carousel{ height: 100%; width: 100%;  color: white; }
-ons-carousel ons-card.card{ box-shadow: none; border: none; text-align: center; color: white; background-color: rgb(14, 151, 59);}
+ons-carousel{ height: 100%; width: 100%;}
+ons-carousel ons-card.card{ box-shadow: none; border: none; text-align: center; background-color: rgb(14, 151, 59);padding:3px}
+.player-stat .list-item__center{min-height: 0;padding: 0;}
 
 table {margin: 0 auto;border-collapse: collapse;width: auto;max-width: 100%;text-align: left;}
 

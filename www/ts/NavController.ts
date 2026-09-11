@@ -1,4 +1,6 @@
 import PlayerService from './PlayerService.js';
+import Player from './Player.js';
+import Players from './Players.js';
 
 import type { OnsCarouselElement as CarouselElement } from '../lib/onsenui';
 
@@ -67,8 +69,40 @@ export default class NavController{
                 return;
             }
             
-            PlayerService.savePlayers(playerInputs.name.value, playerInputs.email.value);
-        } 
+            const players = PlayerService.savePlayers(playerInputs.name.value, playerInputs.email.value);
+            if (!players) {
+                console.error("Failed to save players.");
+                return;
+            }
+
+            const carouselItem = document.getElementById("caiPlayers");
+            if (!carouselItem) {
+                return;
+            }
+
+            carouselItem.innerHTML = ""; // Clear previous content
+            players.players.forEach((player) => {
+                let playerHtml = `
+                    <ons-card><ons-list>
+                    <ons-list-header>${player.name}</ons-list-header>
+                `;
+
+                Object.entries(player).forEach(([property, value]) => {
+                    if (property === "name" || property === "email") {
+                        return;
+                    }
+                    playerHtml += `
+                        <ons-list-item class="player-stat">${property.toUpperCase()}: ${value}</ons-list-item>
+                    `;
+                });
+
+                playerHtml += `
+                    </ons-list></ons-card>
+                `;
+
+                carouselItem.innerHTML += playerHtml;
+            });
+        }; 
     }
 
     static onCarouselNewGamePostChange(event: Event) {
