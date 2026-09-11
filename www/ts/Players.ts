@@ -15,7 +15,9 @@ export default class Players {
     }
 
     savePlayersToSessionStorage() {
-        sessionStorage.setItem("players", JSON.stringify(this.players));
+        const json = JSON.stringify(this.players);
+        console.log("Saving players to session storage:", json);
+        sessionStorage.setItem("players", json);
     }
 
     loadPlayersFromSessionStorage() {

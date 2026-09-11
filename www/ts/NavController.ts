@@ -1,5 +1,5 @@
-import Player from './Player.js';
-import Players from './Players.js';
+import PlayerService from './PlayerService.js';
+
 import type { OnsCarouselElement as CarouselElement } from '../lib/onsenui';
 
 export default class NavController{
@@ -32,15 +32,6 @@ export default class NavController{
 
             const target = event.target;
 
-            // Preserve typing and cursor movement in editable fields.
-            // if (
-            //     target instanceof HTMLElement &&
-            //     (target.matches("input, textarea, select") ||
-            //         target.isContentEditable)
-            // ) {
-            //     return;
-            // }
-
             if (event.key === "ArrowRight") {
                 event.preventDefault();
                 carousel.next();
@@ -63,53 +54,61 @@ export default class NavController{
     }
 
     static onCarouselPlayersPreChange(event: Event) {
-        const items = ((event as any).carousel as HTMLElement).querySelectorAll("ons-carousel-item");
-        const activeItem = items[(event as any).activeIndex];
+        const activeItem = NavController.getActiveCarouselItem(event);
 
         if (activeItem?.id === "caiPlayers") {
-            const playerNameInput = document.getElementById("inputPlayerName") as HTMLInputElement | null;
-            const playerEmailInput = document.getElementById("inputPlayerEmail") as HTMLInputElement | null;
-
-            if (!playerNameInput || !playerEmailInput) {
-                console.error("Player form fields not found.");
+            const playerInputs = NavController.playerInputs();
+            if (!playerInputs) {
+                console.error("Player information not found.");
+                return;
+            }
+            if (!playerInputs.name.value || !playerInputs.email.value) {
+                console.error("Player name or email is empty.");
                 return;
             }
             
-            const name = playerNameInput.value;
-            const email = playerEmailInput.value;
-
-            const player = new Player(name, email);
-            const players = new Players();
-            players.addPlayer(player);
-            players.addDefaultPlayers();
-
-            players.savePlayersToSessionStorage();
-            console.log("Players saved to session storage:", JSON.stringify(players.players));
-
-            player.save();
+            PlayerService.savePlayers(playerInputs.name.value, playerInputs.email.value);
         } 
-
-        // Use these values to query your data.
     }
 
     static onCarouselNewGamePostChange(event: Event) {
+        const activeItem = NavController.getActiveCarouselItem(event);
+
+        if (activeItem?.id !== "caiNewGame") {
+            return;
+        }
+
+        const player = PlayerService.loadMainPlayer();
+        if (!player) {
+            console.error("Failed to load main player.");
+            return;
+        }
+
+        const playerInputs = NavController.playerInputs();
+        if (playerInputs) {
+            playerInputs.name.value = player.name;
+            playerInputs.email.value = player.email;
+        }
+    }
+
+    private static getActiveCarouselItem(event: Event) {
         const items = ((event as any).carousel as HTMLElement).querySelectorAll("ons-carousel-item");
         const activeItem = items[(event as any).activeIndex];
+        return activeItem;
+    }
 
-        if (activeItem?.id === "caiNewGame") {
-            const player = Player.load();
-            if (player) {
-                const playerNameInput = document.getElementById("inputPlayerName") as HTMLInputElement | null;
-                const playerEmailInput = document.getElementById("inputPlayerEmail") as HTMLInputElement | null;
+    private static playerInputs() : { name: HTMLInputElement; email: HTMLInputElement } | null {
+        const playerNameInput = document.getElementById("inputPlayerName") as HTMLInputElement | null;
+        const playerEmailInput = document.getElementById("inputPlayerEmail") as HTMLInputElement | null;
 
-                if (!playerNameInput || !playerEmailInput) {
-                    console.error("Player form fields not found.");
-                    return;
-                }
-
-                playerNameInput.value = player.name;
-                playerEmailInput.value = player.email;
-            }
+        if (!playerNameInput || !playerEmailInput) {
+            console.error("Player form fields not found.");
+            return null;
         }
+
+        return {
+            name: playerNameInput,
+            email: playerEmailInput
+        };
     }
 };
