@@ -11,17 +11,20 @@
     }
   },
   "scripts": {
-    "build": "tsc --version && tsc --listEmittedFiles",
-    "test": "vitest run",
+    "build": "tsc --version && tsc --build --force --watch",
+    "test": "vitest run --watch",
     "check": "npm run build && npm run test",
-    "monaca:preview": "npm run dev",
-    "dev": "node -p \"require('./node_modules/typescript/package.json').version\" && node ./node_modules/typescript/lib/tsc.js && node ./node_modules/browser-sync/dist/bin.js start -s www/ --watch --port 8080 --ui-port 8081 --no-open",
+    "dev": "concurrently \"npm run build\" \"npm run serve\" \"npm run test\"",
+    "monaca:transpile": "node ./node_modules/typescript/lib/tsc.js --build --force",
+    "serve": "node ./node_modules/browser-sync/dist/bin.js start -s www/ --watch --port 8080 --ui-port 8081 --no-open",
+    "monaca:preview": "concurrently \"npm run monaca:transpile\" \"npm run serve\"",
     "sqlite:build": "node ./scripts/copy-sqlite.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@vitest/coverage-v8": "^5.0.0",
     "browser-sync": "~2.27.7",
+    "concurrently": "^8.2.2",
     "cordova": "^12.0.0",
     "eslint": "^10.10.0",
     "eslint-plugin-html": "^8.2.0",

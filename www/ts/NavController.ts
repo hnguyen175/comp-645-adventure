@@ -75,15 +75,16 @@ export default class NavController{
                 return;
             }
 
-            const carouselItem = document.getElementById("caiPlayers");
-            if (!carouselItem) {
+            const playerCards = document.getElementById("playerCards");
+            if (!playerCards) {
+                console.error("Player cards container not found.");
                 return;
             }
 
-            carouselItem.innerHTML = ""; // Clear previous content
+            playerCards.innerHTML = ""; // Clear previous content
             players.players.forEach((player) => {
                 let playerHtml = `
-                    <ons-card><ons-list>
+                    <ons-card class="player-card"><ons-list>
                     <ons-list-header>${player.name}</ons-list-header>
                 `;
 
@@ -100,7 +101,7 @@ export default class NavController{
                     </ons-list></ons-card>
                 `;
 
-                carouselItem.innerHTML += playerHtml;
+                playerCards.innerHTML += playerHtml;
             });
         }; 
     }

@@ -1,13 +1,62 @@
-section {background-color: brown;margin-bottom:100px;display: none; color: white; padding: 10px; border-radius: 8px;}
-body {text-align:center;}
+section {
+    background-color: brown;
+    margin-bottom: 100px;
+    display: none;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+}
 
-ons-carousel{ height: 100%; width: 100%;}
-ons-carousel ons-card.card{ box-shadow: none; border: none; text-align: center; background-color: rgb(14, 151, 59);padding:3px}
-.player-stat .list-item__center{min-height: 0;padding: 0;}
+body {
+    text-align: center;
+    background-color: rgb(14, 151, 59);
+}
 
-table {margin: 0 auto;border-collapse: collapse;width: auto;max-width: 100%;text-align: left;}
+ons-carousel {
+    height: 100%;
+    width: 100%;
+    padding: 0 10px;
+}
 
-footer {background-color: red;padding: 2px}
+ons-carousel ons-card.card {
+    box-shadow: none;
+    border: none;
+    text-align: center;
+    padding: 3px;
+    background-color: transparent;
+}
+
+.player-stat .list-item__center {
+    min-height: 0;
+    padding: 0;
+}
+
+ons-carousel-item {
+    background-color: rgb(14, 151, 59);
+}
+
+ons-carousel-item h4 {
+    text-align: left;
+}
+
+ons-list-header {
+    font-family: system-ui, sans-serif;
+    font-weight: bold;
+}
+
+table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    width: auto;
+    max-width: 100%;
+    text-align: left;
+}
+
+footer {
+    background-color: rgba(0, 255, 242, 0.856);
+    padding: 2px;
+    font-size: 20;
+}
 
 #scWelcome {
     display: block;
@@ -38,6 +87,7 @@ ons-carousel-item ons-card td:nth-child(2) {
     align-items: center;
     flex-wrap: nowrap;
     gap: 4px;
+    width: 100%;
 }
 
 .input-with-clear ons-input {
@@ -51,4 +101,18 @@ ons-carousel-item ons-card td:nth-child(2) {
     border: none;
     background: transparent;
     color: white;
+}
+
+.player-card {
+    margin: 10px;
+    box-shadow: 0 4px 12px rgba(1, 1, 1, 1) !important;
+}
+
+.player-input-table {
+    width: 50%;
+    table-layout: fixed;
+}
+
+.player-input-table td {
+    width: 50%;
 }
