@@ -50,67 +50,6 @@ Vitest.test("showSection logs an error if no sections are found", () => {
     consoleErrorSpy.mockRestore();
 });
 
-// Vitest.test.each([
-//     ['ArrowRight', 'next'],
-//     ['ArrowLeft', 'prev'],
-//     ['ArrowUp', 'nada'],
-//     ['ArrowDown', 'nada'],
-//     ['a', 'nada'],
-//     ['PgDown', 'nada'],
-//     ['Enter', 'nada']
-// ] as const)("navigateCarousel handles %s keydown event", (key, method) => {
-//     const carousel = document.createElement('div') as unknown as HTMLElement & {
-//         next: () => void;
-//         prev: () => void;
-//         nada: () => void;
-//     };
-
-//     carousel.id = 'carouselNewGame';
-//     carousel[method] = Vitest.vi.fn();
-
-//     document.body.appendChild(carousel);
-
-//     navController.navigateCarousel(new KeyboardEvent('keydown', { key }));
-
-//     if (method === 'nada') {
-//         Vitest.expect(carousel[method]).not.toHaveBeenCalled();
-//     } else {
-//         Vitest.expect(carousel[method]).toHaveBeenCalledOnce();
-//     }
-// });
-
-// Vitest.test("navigateCarousel on click event for btnNewGame calls next on carousel", () => {
-//     const carousel = document.createElement('div') as unknown as HTMLElement & {
-//         next: () => void;
-//     };
-//     carousel.id = 'carouselNewGame';
-//     carousel.next = Vitest.vi.fn();
-
-//     const btnNewGame = document.createElement('button') as unknown as HTMLElement & {
-//         id: string;
-//     };
-//     btnNewGame.id = 'btnNewGame';
-
-//     document.body.appendChild(carousel);
-//     document.body.appendChild(btnNewGame);
-
-//     document.getElementById("btnNewGame")?.addEventListener(
-//         "click",
-//         navController.navigateCarousel
-//     );
-
-//     btnNewGame.click();
-
-//     Vitest.expect(carousel.next).toHaveBeenCalledOnce();
-// });
-
-// Vitest.test("navigateCarousel logs an error if carousel element is not found", () => {
-//     const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
-//     navController.navigateCarousel(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-//     Vitest.expect(consoleErrorSpy).toHaveBeenCalled();
-//     consoleErrorSpy.mockRestore();
-// });
-
 Vitest.test("onCarouselPlayersPreChange retrieves the active carousel item", () => {
     document.body.innerHTML = `
         <ons-carousel id="carouselNewGame" swipeable auto-scroll>

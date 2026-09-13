@@ -98,8 +98,4 @@ export default class Player {
     save() {
         sessionStorage.setItem("player", JSON.stringify(this));
     }
-
-    static samePlayer(name: string, email: string, other: Player) : boolean {
-        return name === other.name && email === other.email;
-    }
 }
