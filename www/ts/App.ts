@@ -70,6 +70,13 @@ export default class App {
                 this.emptyInput("inputPlayerEmail");
             }
         );
+
+        document.getElementById("caiWelcome")?.addEventListener(
+            "click",
+            (event) => {
+                this.navController.onCarouselNewGame(event);
+            }
+        );
     }
 
     private emptyInput(inputId: string) : void {

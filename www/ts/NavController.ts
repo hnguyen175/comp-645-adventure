@@ -1,11 +1,11 @@
 import PlayerService from './PlayerService.js';
-import Player from './Player.js';
-import Players from './Players.js';
+import PlayerView from './PlayerView.js';
 
 import type { OnsCarouselElement as CarouselElement } from '../lib/onsenui';
 
 export default class NavController{
-    constructor(private playerService: PlayerService = new PlayerService()) {
+    constructor(private playerService: PlayerService = new PlayerService(),
+                private playerView: PlayerView = new PlayerView()) {
     }       
 
     static showSection(sectionId: string){
@@ -58,6 +58,15 @@ export default class NavController{
 
     //     console.log("unexpected navigation event", event.currentTarget);
     // }
+    onCarouselNewGame(event: Event) {
+        const carousel = document.getElementById("carouselNewGame") as CarouselElement | null;
+        if (!carousel) {
+            console.error("Carousel element not found.");
+            return;
+        }
+
+        carousel.next();
+    }
 
     onCarouselPlayersPreChange(event: Event) {
         const activeItem = NavController.getActiveCarouselItem(event);
@@ -79,34 +88,7 @@ export default class NavController{
                 return;
             }
 
-            const playerCards = document.getElementById("playerCards");
-            if (!playerCards) {
-                console.error("Player cards container not found.");
-                return;
-            }
-
-            playerCards.innerHTML = ""; // Clear previous content
-            players.players.forEach((player) => {
-                let playerHtml = `
-                    <ons-card class="player-card"><ons-list>
-                    <ons-list-header>${player.name}</ons-list-header>
-                `;
-
-                Object.entries(player).forEach(([property, value]) => {
-                    if (property === "name" || property === "email") {
-                        return;
-                    }
-                    playerHtml += `
-                        <ons-list-item class="player-stat">${property.toUpperCase()}: ${value}</ons-list-item>
-                    `;
-                });
-
-                playerHtml += `
-                    </ons-list></ons-card>
-                `;
-
-                playerCards.innerHTML += playerHtml;
-            });
+            this.playerView.renderPlayerCards(players);
         }; 
     }
 
