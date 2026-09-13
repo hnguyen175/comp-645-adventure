@@ -5,6 +5,9 @@ import Players from './Players.js';
 import type { OnsCarouselElement as CarouselElement } from '../lib/onsenui';
 
 export default class NavController{
+    constructor(private playerService: PlayerService = new PlayerService()) {
+    }       
+
     static showSection(sectionId: string){
         let sections = document.querySelectorAll("section");
         if (!sections || sections.length == 0){
@@ -21,7 +24,7 @@ export default class NavController{
         }
     }
 
-    static navigateCarousel(event: Event){
+    navigateCarousel(event: Event){
         const carousel =
             document.getElementById("carouselNewGame") as CarouselElement | null;
         
@@ -44,6 +47,7 @@ export default class NavController{
                 carousel.prev();
                 return;
             }
+            return;
         }
 
         if (event.type === "click" &&
@@ -55,7 +59,7 @@ export default class NavController{
         console.log("unexpected navigation event", event.currentTarget);
     }
 
-    static onCarouselPlayersPreChange(event: Event) {
+    onCarouselPlayersPreChange(event: Event) {
         const activeItem = NavController.getActiveCarouselItem(event);
 
         if (activeItem?.id === "caiPlayers") {
@@ -69,7 +73,7 @@ export default class NavController{
                 return;
             }
             
-            const players = PlayerService.savePlayers(playerInputs.name.value, playerInputs.email.value);
+            const players = this.playerService.savePlayers(playerInputs.name.value, playerInputs.email.value);
             if (!players) {
                 console.error("Failed to save players.");
                 return;
@@ -106,14 +110,14 @@ export default class NavController{
         }; 
     }
 
-    static onCarouselNewGamePostChange(event: Event) {
+    onCarouselNewGamePostChange(event: Event) {
         const activeItem = NavController.getActiveCarouselItem(event);
 
         if (activeItem?.id !== "caiNewGame") {
             return;
         }
 
-        const player = PlayerService.loadMainPlayer();
+        const player = this.playerService.loadMainPlayer();
         if (!player) {
             console.error("Failed to load main player.");
             return;

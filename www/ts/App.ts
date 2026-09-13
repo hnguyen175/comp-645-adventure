@@ -1,19 +1,23 @@
 import NavController from './NavController.js';
 
 export default class App {
-    static {
-        document.addEventListener("DOMContentLoaded", App.DeviceReady);
+    private navController: NavController;
+
+    constructor() {
+        this.navController = new NavController();
+        document.addEventListener("DOMContentLoaded",
+            () => this.DeviceReady());
     }
 
-    static async DeviceReady() {
+    private async DeviceReady() {
         console.log("Device is ready");
 
-        App.InitializeDB();
+        this.InitializeDB();
 
-        App.RegisterEventHandlers();
+        this.RegisterEventHandlers();
     }
 
-    static InitializeDB() {
+    private InitializeDB() {
         const dbWorker = new Worker(
             "./js/DatabaseService.js",
             { type: "module" });
@@ -32,43 +36,43 @@ export default class App {
         };
     }
 
-    static RegisterEventHandlers() {
+    private RegisterEventHandlers() {
         document.addEventListener(
             "keydown",
-            NavController.navigateCarousel
+            (event) => this.navController.navigateCarousel(event)
         );
 
         document.getElementById("carouselNewGame")?.addEventListener(
             "prechange",
-            NavController.onCarouselPlayersPreChange
+            (event) => this.navController.onCarouselPlayersPreChange(event)
         );
 
         document.getElementById("carouselNewGame")?.addEventListener(
             "postchange",
-            NavController.onCarouselNewGamePostChange
+            (event) => this.navController.onCarouselNewGamePostChange(event)
         );
 
         document.getElementById("btnNewGame")?.addEventListener(
             "click",
-            NavController.navigateCarousel
+            (event) => this.navController.navigateCarousel(event)
         );
 
         document.getElementById("btnClearName")?.addEventListener(
             "click",
-            () => {
-                App.emptyInput("inputPlayerName");
+            (event) => {
+                this.emptyInput("inputPlayerName");
             }
         );
 
         document.getElementById("btnClearEmail")?.addEventListener(
             "click",
-            () => {
-                App.emptyInput("inputPlayerEmail");
+            (event) => {
+                this.emptyInput("inputPlayerEmail");
             }
         );
     }
 
-    private static emptyInput(inputId: string) : void {
+    private emptyInput(inputId: string) : void {
         const input = document.getElementById(inputId) as HTMLInputElement || null;
         if (input) {
             input.value = "";
@@ -76,3 +80,5 @@ export default class App {
         }
     }
 };
+
+const app = new App();
