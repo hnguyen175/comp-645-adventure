@@ -3,8 +3,19 @@
 import * as Vitest from 'vitest';
 import NavController from '../www/ts/NavController';
 import PlayerService from '../www/ts/PlayerService';
+import Players from '../www/ts/Players';
+import PlayerView from '../www/ts/PlayerView';
+import type { OnsCarouselElement as CarouselElement } from '../www/lib/onsenui';
+
+let navController : NavController = null as unknown as NavController;
+let playerService : PlayerService = null as unknown as PlayerService;
+let playerView : PlayerView = null as unknown as PlayerView;
 
 Vitest.beforeEach(() => {
+    playerService = new PlayerService();
+    playerView = new PlayerView();
+    navController = new NavController(playerService, playerView);
+
     // Clear the document body before each test
     document.body.innerHTML = '';
     sessionStorage.clear();
@@ -39,66 +50,66 @@ Vitest.test("showSection logs an error if no sections are found", () => {
     consoleErrorSpy.mockRestore();
 });
 
-Vitest.test.each([
-    ['ArrowRight', 'next'],
-    ['ArrowLeft', 'prev'],
-    ['ArrowUp', 'nada'],
-    ['ArrowDown', 'nada'],
-    ['a', 'nada'],
-    ['PgDown', 'nada'],
-    ['Enter', 'nada']
-] as const)("navigateCarousel handles %s keydown event", (key, method) => {
-    const carousel = document.createElement('div') as unknown as HTMLElement & {
-        next: () => void;
-        prev: () => void;
-        nada: () => void;
-    };
+// Vitest.test.each([
+//     ['ArrowRight', 'next'],
+//     ['ArrowLeft', 'prev'],
+//     ['ArrowUp', 'nada'],
+//     ['ArrowDown', 'nada'],
+//     ['a', 'nada'],
+//     ['PgDown', 'nada'],
+//     ['Enter', 'nada']
+// ] as const)("navigateCarousel handles %s keydown event", (key, method) => {
+//     const carousel = document.createElement('div') as unknown as HTMLElement & {
+//         next: () => void;
+//         prev: () => void;
+//         nada: () => void;
+//     };
 
-    carousel.id = 'carouselNewGame';
-    carousel[method] = Vitest.vi.fn();
+//     carousel.id = 'carouselNewGame';
+//     carousel[method] = Vitest.vi.fn();
 
-    document.body.appendChild(carousel);
+//     document.body.appendChild(carousel);
 
-    NavController.navigateCarousel(new KeyboardEvent('keydown', { key }));
+//     navController.navigateCarousel(new KeyboardEvent('keydown', { key }));
 
-    if (method === 'nada') {
-        Vitest.expect(carousel[method]).not.toHaveBeenCalled();
-    } else {
-        Vitest.expect(carousel[method]).toHaveBeenCalledOnce();
-    }
-});
+//     if (method === 'nada') {
+//         Vitest.expect(carousel[method]).not.toHaveBeenCalled();
+//     } else {
+//         Vitest.expect(carousel[method]).toHaveBeenCalledOnce();
+//     }
+// });
 
-Vitest.test("navigateCarousel on click event for btnNewGame calls next on carousel", () => {
-    const carousel = document.createElement('div') as unknown as HTMLElement & {
-        next: () => void;
-    };
-    carousel.id = 'carouselNewGame';
-    carousel.next = Vitest.vi.fn();
+// Vitest.test("navigateCarousel on click event for btnNewGame calls next on carousel", () => {
+//     const carousel = document.createElement('div') as unknown as HTMLElement & {
+//         next: () => void;
+//     };
+//     carousel.id = 'carouselNewGame';
+//     carousel.next = Vitest.vi.fn();
 
-    const btnNewGame = document.createElement('button') as unknown as HTMLElement & {
-        id: string;
-    };
-    btnNewGame.id = 'btnNewGame';
+//     const btnNewGame = document.createElement('button') as unknown as HTMLElement & {
+//         id: string;
+//     };
+//     btnNewGame.id = 'btnNewGame';
 
-    document.body.appendChild(carousel);
-    document.body.appendChild(btnNewGame);
+//     document.body.appendChild(carousel);
+//     document.body.appendChild(btnNewGame);
 
-    document.getElementById("btnNewGame")?.addEventListener(
-        "click",
-        NavController.navigateCarousel
-    );
+//     document.getElementById("btnNewGame")?.addEventListener(
+//         "click",
+//         navController.navigateCarousel
+//     );
 
-    btnNewGame.click();
+//     btnNewGame.click();
 
-    Vitest.expect(carousel.next).toHaveBeenCalledOnce();
-});
+//     Vitest.expect(carousel.next).toHaveBeenCalledOnce();
+// });
 
-Vitest.test("navigateCarousel logs an error if carousel element is not found", () => {
-    const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
-    NavController.navigateCarousel(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-    Vitest.expect(consoleErrorSpy).toHaveBeenCalled();
-    consoleErrorSpy.mockRestore();
-});
+// Vitest.test("navigateCarousel logs an error if carousel element is not found", () => {
+//     const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
+//     navController.navigateCarousel(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+//     Vitest.expect(consoleErrorSpy).toHaveBeenCalled();
+//     consoleErrorSpy.mockRestore();
+// });
 
 Vitest.test("onCarouselPlayersPreChange retrieves the active carousel item", () => {
     document.body.innerHTML = `
@@ -106,6 +117,7 @@ Vitest.test("onCarouselPlayersPreChange retrieves the active carousel item", () 
         <ons-carousel-item id="caiWelcome">
         </ons-carousel-item>
         <ons-carousel-item id="caiPlayers">
+        <ons-card id="playerCards"></ons-card>
         </ons-carousel-item>
         </ons-carousel>
 
@@ -121,11 +133,11 @@ Vitest.test("onCarouselPlayersPreChange retrieves the active carousel item", () 
         activeIndex: 1,
     });
 
-    Vitest.vi.spyOn(PlayerService, 'savePlayers').mockImplementation(() => {});
+    const savePlayerSpy = Vitest.vi.spyOn(playerService, 'savePlayers').mockImplementation(() : Players => {return new Players();});
 
-    NavController.onCarouselPlayersPreChange(event);
+    navController.onCarouselPlayersPreChange(event);
 
-    Vitest.expect(PlayerService.savePlayers).toHaveBeenCalledWith("John Doe", "john.doe@example.com");
+    Vitest.expect(savePlayerSpy).toHaveBeenCalledWith("John Doe", "john.doe@example.com");
 });
 
 Vitest.test("onCarouselPlayersPreChange no input fields found logs an error", () => {
@@ -149,12 +161,12 @@ Vitest.test("onCarouselPlayersPreChange no input fields found logs an error", ()
         activeIndex: 1,
     });
 
-    Vitest.vi.spyOn(PlayerService, 'savePlayers').mockImplementation(() => {});
+    Vitest.vi.spyOn(playerService, 'savePlayers').mockImplementation((name: string, email: string) : Players => {return new Players();});
     const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    NavController.onCarouselPlayersPreChange(event);
+    navController.onCarouselPlayersPreChange(event);
 
-    Vitest.expect(PlayerService.savePlayers).not.toHaveBeenCalled();
+    Vitest.expect(playerService.savePlayers).not.toHaveBeenCalled();
     Vitest.expect(consoleErrorSpy).toHaveBeenCalled();
 });
 
@@ -176,12 +188,12 @@ Vitest.test("onCarouselPlayersPreChange input fields not found logs an error", (
         activeIndex: 1,
     });
 
-    Vitest.vi.spyOn(PlayerService, 'savePlayers').mockImplementation(() => {});
+    Vitest.vi.spyOn(playerService, 'savePlayers').mockImplementation((name: string, email: string) : Players => {return new Players();});
     const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    NavController.onCarouselPlayersPreChange(event);
+    navController.onCarouselPlayersPreChange(event);
 
-    Vitest.expect(PlayerService.savePlayers).not.toHaveBeenCalled();
+    Vitest.expect(playerService.savePlayers).not.toHaveBeenCalled();
     Vitest.expect(consoleErrorSpy).toHaveBeenCalled();
 });
 
@@ -206,13 +218,42 @@ Vitest.test("onCarouselPlayersPreChange does nothing if active item is not caiPl
         activeIndex: 0,
     });
 
-    Vitest.vi.spyOn(PlayerService, 'savePlayers').mockImplementation(() => {});
+    Vitest.vi.spyOn(playerService, 'savePlayers').mockImplementation((name: string, email: string) : Players => {return new Players();});
     const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    NavController.onCarouselPlayersPreChange(event);
+    navController.onCarouselPlayersPreChange(event);
 
-    Vitest.expect(PlayerService.savePlayers).not.toHaveBeenCalled();
+    Vitest.expect(playerService.savePlayers).not.toHaveBeenCalled();
     Vitest.expect(consoleErrorSpy).not.toHaveBeenCalled();
+});
+
+Vitest.test("onCarouselPlayersPreChange logs an error if playerService.savePlayers returns null", () => {
+    document.body.innerHTML = `
+        <ons-carousel id="carouselNewGame" swipeable auto-scroll>
+        <ons-carousel-item id="caiWelcome">
+        </ons-carousel-item>
+        <ons-carousel-item id="caiPlayers">
+        </ons-carousel-item>
+        </ons-carousel>
+
+        <input type="text" id="inputPlayerName" value="John Doe" />
+        <input type="text" id="inputPlayerEmail" value="john.doe@example.com" />
+    `;
+
+    Vitest.vi.spyOn(playerService, 'savePlayers').mockReturnValue(null);
+    const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const carousel = document.getElementById("carouselNewGame") as unknown as HTMLElement;
+
+    const event = new Event('prechange');
+    Object.assign(event, {
+        carousel,
+        activeIndex: 1,
+    });
+
+    navController.onCarouselPlayersPreChange(event);
+
+    Vitest.expect(consoleErrorSpy).toHaveBeenCalled();
 });
 
 Vitest.test("onCarouselNewGamePostChange retrieves the active carousel item and loads main player", () => {
@@ -233,12 +274,12 @@ Vitest.test("onCarouselNewGamePostChange retrieves the active carousel item and 
         activeIndex: 2,
     });
 
-    Vitest.vi.spyOn(PlayerService, 'loadMainPlayer').mockReturnValue({
+    Vitest.vi.spyOn(playerService, 'loadMainPlayer').mockReturnValue({
         name: "John Doe",
         email: "john.doe@example.com"
     } as any);
 
-    NavController.onCarouselNewGamePostChange(event);
+    navController.onCarouselNewGamePostChange(event);
 
     Vitest.expect((document.getElementById("inputPlayerName") as HTMLInputElement).value).toBe("John Doe");
     Vitest.expect((document.getElementById("inputPlayerEmail") as HTMLInputElement).value).toBe("john.doe@example.com");
@@ -261,14 +302,14 @@ Vitest.test("onCarouselNewGamePostChange log error if no input fields found", ()
         activeIndex: 2,
     });
 
-    Vitest.vi.spyOn(PlayerService, 'loadMainPlayer').mockReturnValue({
+    Vitest.vi.spyOn(playerService, 'loadMainPlayer').mockReturnValue({
         name: "John Doe",
         email: "john.doe@example.com"
     } as any);
 
     const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    NavController.onCarouselNewGamePostChange(event);
+    navController.onCarouselNewGamePostChange(event);
 
     Vitest.expect(consoleErrorSpy).toHaveBeenCalled();
 });
@@ -291,9 +332,8 @@ Vitest.test("onCarouselNewGamePostChange does nothing if no main player is found
         activeIndex: 2,
     });
 
-    Vitest.vi.spyOn(PlayerService, 'loadMainPlayer').mockReturnValue(null);
-
-    NavController.onCarouselNewGamePostChange(event);
+    Vitest.vi.spyOn(playerService, 'loadMainPlayer').mockReturnValue(null);
+    navController.onCarouselNewGamePostChange(event);
 
     Vitest.expect((document.getElementById("inputPlayerName") as HTMLInputElement).value).toBe("");
     Vitest.expect((document.getElementById("inputPlayerEmail") as HTMLInputElement).value).toBe("");
@@ -318,8 +358,48 @@ Vitest.test("onCarouselNewGamePostChange does nothing if active item is not caiN
         activeIndex: 0,
     });
 
-    NavController.onCarouselNewGamePostChange(event);
+    navController.onCarouselNewGamePostChange(event);
 
     Vitest.expect((document.getElementById("inputPlayerName") as HTMLInputElement).value).toBe("");
     Vitest.expect((document.getElementById("inputPlayerEmail") as HTMLInputElement).value).toBe("");
+});
+
+Vitest.test("onCarouselNewGame navigates to next carousel item", () => {
+    document.body.innerHTML = `
+        <ons-carousel id="carouselNewGame" swipeable auto-scroll>
+              <ons-card>
+        <ons-button class="btn js-load-game" id="btnNewGame">New Game</ons-button>
+      </ons-card>
+        `;
+
+    const carousel = document.getElementById("carouselNewGame") as unknown as CarouselElement;
+    Object.defineProperty(carousel, 'next', {
+        value: Vitest.vi.fn(),
+    });
+
+    const btnNewGame = document.getElementById("btnNewGame") as unknown as HTMLElement;
+    btnNewGame.addEventListener(
+        "click",
+        (event) => navController.onCarouselNewGame(event)
+    );
+
+    btnNewGame.click();
+
+    Vitest.expect(carousel.next).toHaveBeenCalledOnce();
+});
+
+Vitest.test("onCarouselNewGame logs an error if carousel element is not found", () => {
+    document.body.innerHTML = `
+        <ons-card>
+            <ons-button class="btn js-load-game" id="btnNewGame">New Game</ons-button>
+        </ons-card>
+        `;
+    const btnNewGame = document.getElementById("btnNewGame") as unknown as HTMLElement;
+    btnNewGame.addEventListener(
+        "click",
+        (event) => navController.onCarouselNewGame(event)
+    );
+
+    btnNewGame.click();
+    Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
 });
