@@ -37,10 +37,10 @@ export default class App {
     }
 
     private RegisterEventHandlers() {
-        document.addEventListener(
-            "keydown",
-            (event) => this.navController.navigateCarousel(event)
-        );
+        // document.addEventListener(
+        //     "keydown",
+        //     (event) => this.navController.navigateCarousel(event)
+        // );
 
         document.getElementById("carouselNewGame")?.addEventListener(
             "prechange",
@@ -52,10 +52,10 @@ export default class App {
             (event) => this.navController.onCarouselNewGamePostChange(event)
         );
 
-        document.getElementById("btnNewGame")?.addEventListener(
-            "click",
-            (event) => this.navController.navigateCarousel(event)
-        );
+        // document.getElementById("btnNewGame")?.addEventListener(
+        //     "click",
+        //     (event) => this.navController.navigateCarousel(event)
+        // );
 
         document.getElementById("btnClearName")?.addEventListener(
             "click",

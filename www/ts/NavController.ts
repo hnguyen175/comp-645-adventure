@@ -24,40 +24,40 @@ export default class NavController{
         }
     }
 
-    navigateCarousel(event: Event){
-        const carousel =
-            document.getElementById("carouselNewGame") as CarouselElement | null;
+    // navigateCarousel(event: Event){
+    //     const carousel =
+    //         document.getElementById("carouselNewGame") as CarouselElement | null;
         
-        if (!carousel){
-            console.error("Carousel element not found.");
-            return;
-        }
+    //     if (!carousel){
+    //         console.error("Carousel element not found.");
+    //         return;
+    //     }
 
-        if (event instanceof KeyboardEvent && event.type === "keydown") {
+    //     if (event instanceof KeyboardEvent && event.type === "keydown") {
 
-            const target = event.target;
+    //         const target = event.target;
 
-            if (event.key === "ArrowRight") {
-                event.preventDefault();
-                carousel.next();
-                return;
-            }
-            else if (event.key === "ArrowLeft") {
-                event.preventDefault();
-                carousel.prev();
-                return;
-            }
-            return;
-        }
+    //         if (event.key === "ArrowRight") {
+    //             event.preventDefault();
+    //             carousel.next();
+    //             return;
+    //         }
+    //         else if (event.key === "ArrowLeft") {
+    //             event.preventDefault();
+    //             carousel.prev();
+    //             return;
+    //         }
+    //         return;
+    //     }
 
-        if (event.type === "click" &&
-            (event.currentTarget as HTMLElement)?.id === "btnNewGame") {
-            carousel.next();
-            return;
-        }
+    //     if (event.type === "click" &&
+    //         (event.currentTarget as HTMLElement)?.id === "btnNewGame") {
+    //         carousel.next();
+    //         return;
+    //     }
 
-        console.log("unexpected navigation event", event.currentTarget);
-    }
+    //     console.log("unexpected navigation event", event.currentTarget);
+    // }
 
     onCarouselPlayersPreChange(event: Event) {
         const activeItem = NavController.getActiveCarouselItem(event);
