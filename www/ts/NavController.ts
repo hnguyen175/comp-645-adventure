@@ -4,7 +4,7 @@ import PlayerView from './PlayerView.ts';
 import type { OnsCarouselElement as CarouselElement } from '../lib/onsenui';
 
 export default class NavController{
-    carousel!: CarouselElement;
+    private carousel!: CarouselElement;
     constructor(private playerService: PlayerService = new PlayerService(),
                 private playerView: PlayerView = new PlayerView()) {
     }

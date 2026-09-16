@@ -14,7 +14,7 @@
     "build": "tsc --version && tsc --build --force --watch",
     "test": "vitest run --watch",
     "check": "npm run build && npm run test",
-    "dev": "concurrently \"npm run build\" \"npm run serve\" \"npm run test\"",
+    "dev": "concurrently \"npm run build\" \"npm run serve\"",
     "monaca:transpile": "node ./node_modules/typescript/lib/tsc.js --build --force",
     "serve": "node ./node_modules/browser-sync/dist/bin.js start -s www/ --watch --port 8080 --ui-port 8081 --no-open",
     "monaca:preview": "concurrently \"npm run monaca:transpile\" \"npm run serve\"",
@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@vitest/coverage-v8": "^5.0.0",
+    "@vitest/coverage-v8": "^3.2.7",
     "browser-sync": "~2.27.7",
     "concurrently": "^8.2.2",
     "cordova": "^12.0.0",
@@ -31,6 +31,6 @@
     "globals": "^17.12.0",
     "jsdom": "^29.1.1",
     "typescript": "7.0.2",
-    "vitest": "^5.0.0"
+    "vitest": "^3.2.7"
   }
 }

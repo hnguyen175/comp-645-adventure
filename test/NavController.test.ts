@@ -1,5 +1,3 @@
-// @vitest-environment jsdom
-
 import * as Vitest from 'vitest';
 import NavController from '../www/ts/NavController';
 import PlayerService from '../www/ts/PlayerService';
@@ -207,9 +205,13 @@ Vitest.test("onCarouselPlayersPreChange for caiNewGame sets carousel swipeable t
         </ons-carousel>
     `;
     navController.init();
-    navController['carousel'].swipeable = true;
 
     const carousel = document.getElementById("carouselNewGame") as unknown as HTMLElement;
+
+    const swipeableSetter = Vitest.vi.fn();
+    Object.defineProperty(carousel, 'swipeable', {
+        set: swipeableSetter
+    });
 
     const event = new Event('prechange');
     Object.assign(event, {
@@ -218,7 +220,7 @@ Vitest.test("onCarouselPlayersPreChange for caiNewGame sets carousel swipeable t
     });
 
     navController.onCarouselPlayersPreChange(event);
-    Vitest.expect(navController['carousel'].swipeable).toBe(false); 
+    Vitest.expect(swipeableSetter).toHaveBeenCalledWith(false);
 });
 
 
@@ -387,8 +389,14 @@ Vitest.test("onRollButtonClick sets carousel swipeable to true and navigates to 
     navController.init();
 
     const carousel = document.getElementById("carouselNewGame") as unknown as CarouselElement;
-    Object.defineProperty(carousel, 'next', {
-        value: Vitest.vi.fn(),
+    const swipeableSetter = Vitest.vi.fn();
+    Object.defineProperties(carousel, {
+        next: {
+            value: Vitest.vi.fn(),
+        },
+        "swipeable": {
+            set: swipeableSetter
+        },
     });
 
     const btnRoll = document.getElementById("btnRoll") as unknown as HTMLElement;
@@ -399,6 +407,6 @@ Vitest.test("onRollButtonClick sets carousel swipeable to true and navigates to 
 
     btnRoll.click();
 
-    Vitest.expect(carousel.swipeable).toBe(true);
+    Vitest.expect(swipeableSetter).toHaveBeenCalledWith(true);
     Vitest.expect(carousel.next).toHaveBeenCalledOnce();
 });

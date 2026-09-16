@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import * as Vitest from 'vitest';
 import PlayerService from '../www/ts/PlayerService';
 import Player from '../www/ts/Player';
