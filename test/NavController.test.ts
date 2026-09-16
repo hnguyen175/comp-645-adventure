@@ -195,6 +195,33 @@ Vitest.test("onCarouselPlayersPreChange logs an error if playerService.savePlaye
     Vitest.expect(consoleErrorSpy).toHaveBeenCalled();
 });
 
+Vitest.test("onCarouselPlayersPreChange for caiNewGame sets carousel swipeable to false", () => {
+    document.body.innerHTML = `
+        <ons-carousel id="carouselNewGame" swipeable auto-scroll>
+        <ons-carousel-item id="caiWelcome">
+        </ons-carousel-item>
+        <ons-carousel-item id="caiPlayers">
+        </ons-carousel-item>
+        <ons-carousel-item id="caiNewGame">
+        </ons-carousel-item>
+        </ons-carousel>
+    `;
+    navController.init();
+    navController['carousel'].swipeable = true;
+
+    const carousel = document.getElementById("carouselNewGame") as unknown as HTMLElement;
+
+    const event = new Event('prechange');
+    Object.assign(event, {
+        carousel,
+        activeIndex: 2,
+    });
+
+    navController.onCarouselPlayersPreChange(event);
+    Vitest.expect(navController['carousel'].swipeable).toBe(false); 
+});
+
+
 Vitest.test("onCarouselNewGamePostChange retrieves the active carousel item and loads main player", () => {
     document.body.innerHTML = `
         <ons-carousel id="carouselNewGame" swipeable auto-scroll>
@@ -310,6 +337,7 @@ Vitest.test("onCarouselNewGame navigates to next carousel item", () => {
         <ons-button class="btn js-load-game" id="btnNewGame">New Game</ons-button>
       </ons-card>
         `;
+    navController.init();
 
     const carousel = document.getElementById("carouselNewGame") as unknown as CarouselElement;
     Object.defineProperty(carousel, 'next', {
@@ -327,18 +355,50 @@ Vitest.test("onCarouselNewGame navigates to next carousel item", () => {
     Vitest.expect(carousel.next).toHaveBeenCalledOnce();
 });
 
-Vitest.test("onCarouselNewGame logs an error if carousel element is not found", () => {
+Vitest.test("Carousel element is not found during init throws an error", () => {
     document.body.innerHTML = `
         <ons-card>
             <ons-button class="btn js-load-game" id="btnNewGame">New Game</ons-button>
         </ons-card>
         `;
-    const btnNewGame = document.getElementById("btnNewGame") as unknown as HTMLElement;
-    btnNewGame.addEventListener(
+    Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    Vitest.expect(() => {
+        navController.init();
+    }).toThrow("Carousel element not found.");
+});
+
+Vitest.test("onRollButtonClick sets carousel swipeable to true and navigates to next item", async () => {
+    document.body.innerHTML = `
+        <ons-carousel id="carouselNewGame" swipeable auto-scroll>
+            <ons-carousel-item id="caiWelcome">
+                <h2>Welcome</h2>
+            </ons-carousel-item>
+            <ons-carousel-item id="caiPlayers">
+                <h2>Players</h2>
+            </ons-carousel-item>
+            <ons-carousel-item id="caiNewGame">
+                <h2>New Game</h2>
+            </ons-carousel-item>
+        </ons-carousel>
+        <ons-button class="btn js-roll" id="btnRoll">Roll</ons-button>
+    `;
+
+    navController.init();
+
+    const carousel = document.getElementById("carouselNewGame") as unknown as CarouselElement;
+    Object.defineProperty(carousel, 'next', {
+        value: Vitest.vi.fn(),
+    });
+
+    const btnRoll = document.getElementById("btnRoll") as unknown as HTMLElement;
+    btnRoll.addEventListener(
         "click",
-        (event) => navController.onCarouselNewGame(event)
+        (event) => navController.onRollButtonClick(event)
     );
 
-    btnNewGame.click();
-    Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
+    btnRoll.click();
+
+    Vitest.expect(carousel.swipeable).toBe(true);
+    Vitest.expect(carousel.next).toHaveBeenCalledOnce();
 });

@@ -1,5 +1,5 @@
-import Player from './Player.js';
-import Players from './Players.js';
+import Player from './Player.ts';
+import Players from './Players.ts';
 
 export default class PlayerService {
     savePlayers(name: string, email: string): Players {

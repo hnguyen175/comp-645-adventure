@@ -1,5 +1,5 @@
-import Player from "./Player";
-import Players from "./Players";
+import Player from "./Player.ts";
+import Players from "./Players.ts";
 
 export default class PlayerView {
     renderPlayerCards(players: Players): void {

@@ -1,12 +1,22 @@
-import PlayerService from './PlayerService.js';
-import PlayerView from './PlayerView.js';
+import PlayerService from './PlayerService.ts';
+import PlayerView from './PlayerView.ts';
 
 import type { OnsCarouselElement as CarouselElement } from '../lib/onsenui';
 
 export default class NavController{
+    carousel!: CarouselElement;
     constructor(private playerService: PlayerService = new PlayerService(),
                 private playerView: PlayerView = new PlayerView()) {
-    }       
+    }
+
+    init() : void {
+        const carousel = document.getElementById("carouselNewGame") as CarouselElement | null;
+        if (!carousel) {
+            throw new Error("Carousel element not found.");
+        }
+
+        this.carousel = carousel;
+    }
 
     static showSection(sectionId: string){
         let sections = document.querySelectorAll("section");
@@ -25,36 +35,34 @@ export default class NavController{
     }
 
     onCarouselNewGame(event: Event) {
-        const carousel = document.getElementById("carouselNewGame") as CarouselElement | null;
-        if (!carousel) {
-            console.error("Carousel element not found.");
-            return;
-        }
-
-        carousel.next();
+        this.carousel.next();
     }
 
     onCarouselPlayersPreChange(event: Event) {
         const activeItem = NavController.getActiveCarouselItem(event);
+        switch (activeItem?.id) {
+            case "caiNewGame":
+                this.carousel.swipeable = false;
+                break;
+            case "caiPlayers":
+                const playerInputs = NavController.playerInputs();
+                if (!playerInputs) {
+                    console.error("Player information not found.");
+                    return;
+                }
+                if (!playerInputs.name.value || !playerInputs.email.value) {
+                    console.error("Player name or email is empty.");
+                    return;
+                }
+                
+                const players = this.playerService.savePlayers(playerInputs.name.value, playerInputs.email.value);
+                if (!players) {
+                    console.error("Failed to save players.");
+                    return;
+                }
 
-        if (activeItem?.id === "caiPlayers") {
-            const playerInputs = NavController.playerInputs();
-            if (!playerInputs) {
-                console.error("Player information not found.");
-                return;
-            }
-            if (!playerInputs.name.value || !playerInputs.email.value) {
-                console.error("Player name or email is empty.");
-                return;
-            }
-            
-            const players = this.playerService.savePlayers(playerInputs.name.value, playerInputs.email.value);
-            if (!players) {
-                console.error("Failed to save players.");
-                return;
-            }
-
-            this.playerView.renderPlayerCards(players);
+                this.playerView.renderPlayerCards(players);
+                break;
         }; 
     }
 
@@ -97,5 +105,12 @@ export default class NavController{
             name: playerNameInput,
             email: playerEmailInput
         };
+    }
+
+    async onRollButtonClick(event: Event) {
+        console.log("Roll button clicked");
+
+        this.carousel.swipeable = true;
+        await this.carousel.next();
     }
 };
