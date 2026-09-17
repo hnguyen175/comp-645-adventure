@@ -5,6 +5,8 @@ import Players from '../www/ts/Players';
 import PlayerView from '../www/ts/PlayerView';
 import type { OnsCarouselElement as CarouselElement } from '../www/lib/onsenui';
 
+const toastMock = Vitest.vi.fn().mockResolvedValue(undefined);
+
 let navController : NavController = null as unknown as NavController;
 let playerService : PlayerService = null as unknown as PlayerService;
 let playerView : PlayerView = null as unknown as PlayerView;
@@ -13,6 +15,12 @@ Vitest.beforeEach(() => {
     playerService = new PlayerService();
     playerView = new PlayerView();
     navController = new NavController(playerService, playerView);
+
+    Vitest.vi.stubGlobal('ons', {
+        notification: {
+            toast: toastMock
+        }
+    });
 
     // Clear the document body before each test
     document.body.innerHTML = '';
@@ -177,7 +185,7 @@ Vitest.test("onCarouselPlayersPreChange logs an error if playerService.savePlaye
         <input type="text" id="inputPlayerEmail" value="john.doe@example.com" />
     `;
 
-    Vitest.vi.spyOn(playerService, 'savePlayers').mockReturnValue(null);
+    Vitest.vi.spyOn(playerService, 'savePlayers').mockReturnValue(new Players());
     const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const carousel = document.getElementById("carouselNewGame") as unknown as HTMLElement;
@@ -384,6 +392,8 @@ Vitest.test("onRollButtonClick sets carousel swipeable to true and navigates to 
             </ons-carousel-item>
         </ons-carousel>
         <ons-button class="btn js-roll" id="btnRoll">Roll</ons-button>
+        <input id="inputPlayerName" value="John Doe">
+        <input id="inputPlayerEmail" value="john.doe@example.com">
     `;
 
     navController.init();
@@ -409,4 +419,144 @@ Vitest.test("onRollButtonClick sets carousel swipeable to true and navigates to 
 
     Vitest.expect(swipeableSetter).toHaveBeenCalledWith(true);
     Vitest.expect(carousel.next).toHaveBeenCalledOnce();
+});
+
+Vitest.test("onRollButtonClick with invalid player info shows toast notification", async () => {
+    const playerViewMock = {
+        showValidationToast: Vitest.vi.fn().mockResolvedValue(undefined)
+    };
+    const navController = new NavController(playerService, playerViewMock as unknown as PlayerView);
+
+    document.body.innerHTML = `
+        <ons-carousel id="carouselNewGame" swipeable auto-scroll>
+            <ons-carousel-item id="caiWelcome">
+                <h2>Welcome</h2>
+            </ons-carousel-item>
+            <ons-carousel-item id="caiPlayers">
+                <h2>Players</h2>
+            </ons-carousel-item>
+            <ons-carousel-item id="caiNewGame">
+                <h2>New Game</h2>
+            </ons-carousel-item>
+        </ons-carousel>
+        <ons-button class="btn js-roll" id="btnRoll">Roll</ons-button>
+        <input id="inputPlayerName">
+        <input id="inputPlayerEmail" value="john.doe.example.com">
+    `;
+
+    navController.init();
+
+    await navController.onRollButtonClick(new Event('click'));
+
+    Vitest.expect(
+        playerViewMock.showValidationToast.mock.calls.map(
+            ([input, message]) => [input.id, message]
+        )
+    ).toEqual([
+        ["inputPlayerName", "Player name is required."],
+        ["inputPlayerEmail", "Invalid email format."]
+    ]);
+});
+
+Vitest.test("onRollButtonClick with missing input fields logs an error and does not call toast", async () => {
+    document.body.innerHTML = `
+        <ons-carousel id="carouselNewGame" swipeable auto-scroll>   
+        <ons-carousel-item id="caiWelcome">
+            <h2>Welcome</h2>
+        </ons-carousel-item>
+        <ons-carousel-item id="caiPlayers">
+            <h2>Players</h2>
+        </ons-carousel-item>
+        <ons-carousel-item id="caiNewGame">
+            <h2>New Game</h2>
+        </ons-carousel-item>
+    </ons-carousel>
+    <ons-button class="btn js-roll" id="btnRoll">Roll</ons-button>
+    `;
+
+    navController.init();
+
+    const btnRoll = document.getElementById("btnRoll") as unknown as HTMLElement;
+    btnRoll.addEventListener(
+        "click",
+        (event) => navController.onRollButtonClick(event)
+    );
+
+    Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    btnRoll.click();
+
+    Vitest.expect(console.error).toHaveBeenCalled();
+    Vitest.expect(toastMock).not.toHaveBeenCalled();
+});
+
+Vitest.test.each([
+    ["", "Player email is required."],
+    ["John Doe", "Invalid email format."]
+])("onRollButtonClick with %s email and %s validation message shows appropriate toast", async (email, expectedMessage) => {
+// Vitest.test("onRollButtonClick with valid name, invalid email shows toast for email only", async () => {
+    const playerViewMock = {
+        showValidationToast: Vitest.vi.fn().mockResolvedValue(undefined)
+    };
+    const navController = new NavController(playerService, playerViewMock as unknown as PlayerView);
+    document.body.innerHTML = `
+        <ons-carousel id="carouselNewGame" swipeable auto-scroll>
+            <ons-carousel-item id="caiWelcome">
+                <h2>Welcome</h2>
+            </ons-carousel-item>
+            <ons-carousel-item id="caiPlayers">
+                <h2>Players</h2>
+            </ons-carousel-item>
+            <ons-carousel-item id="caiNewGame">
+                <h2>New Game</h2>
+            </ons-carousel-item>
+        </ons-carousel>
+        <ons-button class="btn js-roll" id="btnRoll">Roll</ons-button>
+        <input id="inputPlayerName" value="John Doe">
+        <input id="inputPlayerEmail" value="${email}">
+    `;
+
+    navController.init();
+
+    await navController.onRollButtonClick(new Event('click'));
+
+    Vitest.expect(playerViewMock.showValidationToast).toHaveBeenCalledWith(
+        document.getElementById("inputPlayerEmail"),
+        expectedMessage
+    );
+});
+
+// Vitest.test.each([
+//     ["", "Player email is required."],
+//     ["John Doe", "Invalid email format."]
+Vitest.test("onRollButtonClick with %s email and %s vaildation message shows appropriate toast", async () => {
+    const playerViewMock = {
+        showValidationToast: Vitest.vi.fn().mockResolvedValue(undefined)
+    };
+    const navController = new NavController(playerService, playerViewMock as unknown as PlayerView);
+    document.body.innerHTML = `
+        <ons-carousel id="carouselNewGame" swipeable auto-scroll>
+            <ons-carousel-item id="caiWelcome">
+                <h2>Welcome</h2>
+            </ons-carousel-item>
+            <ons-carousel-item id="caiPlayers">
+                <h2>Players</h2>
+            </ons-carousel-item>
+            <ons-carousel-item id="caiNewGame">
+                <h2>New Game</h2>
+            </ons-carousel-item>
+        </ons-carousel>
+        <ons-button class="btn js-roll" id="btnRoll">Roll</ons-button>
+        <input id="inputPlayerName">
+        <input id="inputPlayerEmail" value="a@b.c">
+    `;
+
+    navController.init();
+
+    await navController.onRollButtonClick(new Event('click'));
+
+    Vitest.expect(playerViewMock.showValidationToast).toHaveBeenCalledWith(
+        document.getElementById("inputPlayerName"),
+        "Player name is required."
+    );
 });

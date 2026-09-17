@@ -1,6 +1,8 @@
 import Player from "./Player.ts";
 import Players from "./Players.ts";
 
+declare const ons: any;
+
 export default class PlayerView {
     renderPlayerCards(players: Players): void {
         const playerCards = document.getElementById("playerCards");
@@ -32,5 +34,23 @@ export default class PlayerView {
                 </ons-list></ons-card>
             `;
         return playerHtml;
+    }
+
+    showValidationToast(input: HTMLInputElement, message: string) {
+        const rect = input.getBoundingClientRect();
+
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("validation-toast");
+        messageElement.textContent = message;
+        messageElement.style.top = `${rect.top}px`;
+        messageElement.style.left = `${rect.right + 12}px`;
+
+        document.body.appendChild(messageElement);
+
+        input.focus();
+
+        setTimeout(() => {
+            messageElement.remove();
+        }, 3000);
     }
 }

@@ -1,6 +1,8 @@
 import PlayerService from './PlayerService.ts';
 import PlayerView from './PlayerView.ts';
 
+declare const ons: any;
+
 import type { OnsCarouselElement as CarouselElement } from '../lib/onsenui';
 
 export default class NavController{
@@ -108,9 +110,24 @@ export default class NavController{
     }
 
     async onRollButtonClick(event: Event) {
-        console.log("Roll button clicked");
+        const playerInputs = NavController.playerInputs();
+        if (!playerInputs) {
+            console.error("Player form fields not found.");
+            return;
+        }
+        const isValid = this.playerService.isPlayerInfoValid(playerInputs.name.value, playerInputs.email.value);
+        if (!isValid.name && !isValid.email) {
+            this.carousel.swipeable = true;
+            await this.carousel.next();
 
-        this.carousel.swipeable = true;
-        await this.carousel.next();
+            return;
+        }
+
+        if (isValid.name) {
+            await this.playerView.showValidationToast(playerInputs.name, isValid.name);
+        }
+        if (isValid.email) {
+            await this.playerView.showValidationToast(playerInputs.email, isValid.email);
+        }
     }
 };

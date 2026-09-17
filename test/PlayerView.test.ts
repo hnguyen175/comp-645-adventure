@@ -34,3 +34,18 @@ Vitest.test('renderPlayerCards should log error if playerCards container is not 
     playerView.renderPlayerCards(new Players());
     Vitest.expect(consoleErrorSpy).toHaveBeenCalled();
 });
+
+Vitest.test('showValidationToast should display a toast message', async () => {
+    document.body.innerHTML = `
+        <input id="testInput" type="text">
+    `;
+    const input = document.getElementById("testInput") as HTMLInputElement;
+    playerView.showValidationToast(input, "This is a test message.");
+    const toast = document.querySelector(".validation-toast");
+    Vitest.expect(toast?.textContent).toBe("This is a test message.");
+    Vitest.expect(document.body.contains(toast as Node)).toBe(true);
+
+    // Wait for the toast to disappear
+    await new Promise(resolve => setTimeout(resolve, 3100));
+    Vitest.expect(document.body.contains(toast as Node)).toBe(false);
+});
