@@ -44,11 +44,6 @@ export default class App {
             (event) => this.navController.onCarouselPlayersPreChange(event)
         );
 
-        document.getElementById("carouselNewGame")?.addEventListener(
-            "postchange",
-            (event) => this.navController.onCarouselNewGamePostChange(event)
-        );
-
         document.getElementById("btnClearName")?.addEventListener(
             "click",
             (event) => {

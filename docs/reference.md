@@ -11,3 +11,10 @@ From: [zoom](https://sdccd-edu.zoom.us/rec/share/uN9qQyL_b1fDLC2Jiyf-jaToTJShPHC
 * New Game
 
 ![New Game 2](images\new-game2.png)
+
+* Save all Players
+
+![Save Players](images\save-players.png)
+
+* Load Game
+![Load Game](images\load-game.png)

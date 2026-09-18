@@ -64,10 +64,15 @@ export default class Player {
         return Player.randomString(Player.arrClasses);
     }
 
-    constructor(name: string, email: string) {
+    constructor(name: string = "", email: string = "") {
         this.name = name;
         this.email = email;
-        Object.assign(this, Player.randomStats());
+    }
+
+    static createRandomPlayer(name: string = "", email: string = "") : Player {
+        const player = new Player(name, email);
+        Object.assign(player, Player.randomStats());
+        return player;
     }
 
     private static randomStats() : PlayerStats {
@@ -83,19 +88,10 @@ export default class Player {
     }
 
     public static getDefaultPlayer() : Player{
-        return new Player(Player.randomName(), `${Player.randomName().toLowerCase()}@comp645.com`);
+        return Player.createRandomPlayer(Player.randomName(), `${Player.randomName().toLowerCase()}@comp645.com`);
     }
 
-    static load() : Player | null {
-        const saved = sessionStorage.getItem("player");
-        if(saved){
-            const player = JSON.parse(saved);
-            return player;
-        }
-        return null;
-    }
-
-    save() {
-        sessionStorage.setItem("player", JSON.stringify(this));
+    static fromJSON(data: Partial<Player>) : Player {
+        return Object.assign(new Player(), data);
     }
 }

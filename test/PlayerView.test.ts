@@ -16,7 +16,7 @@ Vitest.test('renderPlayerCards should render player cards correctly', () => {
     `;
 
     const players = new Players();
-    players.addPlayer(new Player('alice', 'alice@wonderland.org'));
+    players.addPlayer(Player.createRandomPlayer('alice', 'alice@wonderland.org'));
 
     const playerCards = document.getElementById("playerCards");
 
