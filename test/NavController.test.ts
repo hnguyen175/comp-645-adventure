@@ -185,7 +185,7 @@ Vitest.test("onCarouselPlayersPreChange logs an error if playerService.savePlaye
         <input type="text" id="inputPlayerEmail" value="john.doe@example.com" />
     `;
 
-    Vitest.vi.spyOn(playerService, 'savePlayers').mockReturnValue(new Players());
+    Vitest.vi.spyOn(playerService, 'savePlayers').mockReturnValue(null as unknown as Players);
     const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const carousel = document.getElementById("carouselNewGame") as unknown as HTMLElement;
