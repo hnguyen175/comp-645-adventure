@@ -4,7 +4,9 @@ import Players from '../www/ts/Players';
 import Player from '../www/ts/Player';
 import PlayerService from '../www/ts/PlayerService';
 
+let playerService = new PlayerService();
 Vitest.beforeEach(() => {
+    const playerService = new PlayerService();
     localStorage.clear();
 });
 
@@ -30,7 +32,7 @@ Vitest.test("savePlayersToStorage saves players to storage", () => {
     players.addPlayer(player2);
     players.savePlayersToStorage();
     // const savedPlayers = localStorage.getItem("players");
-    const savedPlayers = PlayerService.loadPlayers(player1.email);
+    const savedPlayers = playerService.loadPlayers(player1.email);
     Vitest.expect(savedPlayers).not.toBeNull();
     Vitest.expect(savedPlayers!.players.length).toBe(2);
     Vitest.expect(savedPlayers!.players[0]).toEqual(player1);
@@ -44,15 +46,15 @@ Vitest.test("loadPlayersFromStorage loads players from storage", () => {
     players.addPlayer(player1);
     players.addPlayer(player2);
     players.savePlayersToStorage();
-    const newPlayers = PlayerService.loadPlayers(player1.email) as Players;
+    const newPlayers = playerService.loadPlayers(player1.email) as Players;
     Vitest.expect(newPlayers.players.length).toBe(2);
     Vitest.expect(newPlayers.players[0]).toEqual(player1);
     Vitest.expect(newPlayers.players[1]).toEqual(player2);
 });
 
 Vitest.test("loadPlayersFromStorage does not throw error when no players are saved", () => {
-    Vitest.expect(() => PlayerService.loadPlayers("nonexistent@example.com")).not.toThrow();
-    const players = PlayerService.loadPlayers("nonexistent@example.com");
+    Vitest.expect(() => playerService.loadPlayers("nonexistent@example.com")).not.toThrow();
+    const players = playerService.loadPlayers("nonexistent@example.com");
     Vitest.expect(players).toBeNull();
 });
 

@@ -34,64 +34,7 @@
   <br />
 
   <p></p>
-  <ons-carousel id="carouselNewGame" swipeable auto-scroll fullscreen>
-
-    <ons-carousel-item id="caiWelcome">
-      <header>
-        <h1>Welcome to Adventure</h1>
-      </header>
-      <ons-card>
-        <ons-button class="btn js-load-game" id="btnBack" disabled>Reload</ons-button>
-        <ons-button class="btn js-load-game" id="btnNewGame">New Game</ons-button>
-      </ons-card>
-      <h4>Welcome to the Adventure game!</h4>
-      <footer>Please select New Game or swipe right to start a new game.</footer>
-    </ons-carousel-item>
-
-    <ons-carousel-item id="caiNewGame">
-      <header>
-        <h1>New Game</h1>
-      </header>
-      <ons-card>
-
-        <h4>Enter your info to start a new game.</h4>
-        <table class="player-input-table">
-          <tr>
-            <td>
-              <div class="input-with-clear">
-                <ons-input input-id="inputPlayerName" placeholder="Name" modifier="underbar"></ons-input>
-                <ons-button id="btnClearName" class="btn" modifier="quiet">x</ons-button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="input-with-clear"><ons-input input-id="inputPlayerEmail" placeholder="Email"
-                  modifier="underbar"></ons-input>
-                <ons-button id="btnClearEmail" class="btn" modifier="quiet">x</ons-button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td align="center">
-              <ons-button class="btn" id="btnRoll">Roll</ons-button>
-            </td>
-          </tr>
-        </table>
-
-
-      </ons-card>
-      <footer>Roll the dice to start the game.</footer>
-    </ons-carousel-item>
-
-    <ons-carousel-item id="caiPlayers">
-      <header>
-        <h1>Players are ready!</h1>
-      </header>
-      <div id="playerCards"></div>
-      <footer>Swipe left to re-roll! Otherwise, swipe right to continue.</footer>
-    </ons-carousel-item>
-
+  <ons-carousel id="carouselNewGame" swipeable auto-scroll fullscreen auto-refresh>
   </ons-carousel>
 
 </body>

@@ -1,5 +1,5 @@
-import Player from "./Player.ts";
-import Players from "./Players.ts";
+import Player from "../Player.ts";
+import Players from "../Players.ts";
 
 declare const ons: any;
 

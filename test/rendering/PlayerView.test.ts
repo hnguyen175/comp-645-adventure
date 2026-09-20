@@ -1,7 +1,7 @@
 import * as Vitest from 'vitest';
-import PlayerView from '../www/ts/PlayerView';
-import Players from '../www/ts/Players';
-import Player from '../www/ts/Player';
+import PlayerView from '../../www/ts/rendering/PlayerView';
+import Players from '../../www/ts/Players';
+import Player from '../../www/ts/Player';
 
 let playerView: PlayerView = null as unknown as PlayerView;
 Vitest.beforeEach(() => {

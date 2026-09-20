@@ -1,5 +1,7 @@
 import NavController from './NavController.ts';
 
+declare const ons: any;
+
 export default class App {
     private navController: NavController;
 
@@ -14,9 +16,21 @@ export default class App {
     private async DeviceReady() {
         console.log("Device is ready");
 
-        this.InitializeDB();
+        await this.initialize();
+
+        //this.InitializeDB();
 
         this.RegisterEventHandlers();
+    }
+
+    private async initialize(){
+        await this.navController.loadCarouselItems(
+            [
+                "views/welcome.html",
+                "views/new-game.html",
+                "views/players.html"
+            ]
+        );
     }
 
     private InitializeDB() {
@@ -41,7 +55,7 @@ export default class App {
     private RegisterEventHandlers() {
         document.getElementById("carouselNewGame")?.addEventListener(
             "prechange",
-            (event) => this.navController.onCarouselPlayersPreChange(event)
+            (event) => this.navController.onCarouselPriorDisplayingItem(event)
         );
 
         document.getElementById("btnClearName")?.addEventListener(
@@ -58,7 +72,7 @@ export default class App {
             }
         );
 
-        document.getElementById("caiWelcome")?.addEventListener(
+        document.getElementById("btnNewGame")?.addEventListener(
             "click",
             (event) => {
                 this.navController.onCarouselNewGame(event);
@@ -71,6 +85,32 @@ export default class App {
                 console.log("Roll button clicked");
                 // Implement the roll functionality here
                 this.navController.onRollButtonClick(event);
+            }
+        );
+        document.getElementById("btnReload")?.addEventListener(
+            "click",
+            async (event) => {
+                console.log("Reload button clicked");
+                await this.navController.loadCarouselItems(
+                    [
+                        "views/load-game.html",
+                        "views/players.html"
+                    ]
+                );
+                this.navController.onReloadButtonClick(event);
+
+                this.registerLoadGameButton();
+            }
+        );
+    }
+
+    private registerLoadGameButton() {
+        document.getElementById("btnLoadGame")?.addEventListener(
+            "click",
+            (event) => {
+                console.log("Load Game button clicked");
+                // Implement the load game functionality here
+                this.navController.onLoadGameButtonClick(event);
             }
         );
     }

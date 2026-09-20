@@ -8,7 +8,9 @@ type PlayerInfoResult = {
 };
 
 export default class PlayerService {
-    savePlayers(name: string, email: string): Players {
+    activePlayers: Players | null= null;
+
+    savePlayers(name: string, email: string) : void{
         const player = Player.createRandomPlayer(name, email);
 
         const players = new Players();
@@ -19,11 +21,12 @@ export default class PlayerService {
 
         allPlayers.addPlayer(email);
 
-        return players;
+        this.activePlayers = players;
     }
 
-    static loadPlayers(email: string): Players | null {
-        return Players.loadPlayersFromStorage(email);
+    loadPlayers(email: string): Players | null {
+        this.activePlayers = Players.loadPlayersFromStorage(email);
+        return this.activePlayers;
     }
 
     isPlayerInfoValid(name: string, email: string): PlayerInfoResult {
@@ -43,5 +46,9 @@ export default class PlayerService {
         }
 
         return errorMessage;
+    }
+
+    listPlayersFromStorage(): string[] {
+        return allPlayers.getAllPlayers();
     }
 };
