@@ -5,12 +5,13 @@ import AllPlayersList from './rendering/AllPlayersList.ts';
 declare const ons: any;
 
 import type { OnsCarouselElement as CarouselElement } from '../lib/onsenui';
+import WrapMethods from './utilities/WrapMethods.ts';
 
 export default class NavController{
     private carousel!: CarouselElement;
 
-    constructor(private playerService: PlayerService = new PlayerService(),
-                private playerView: PlayerView = new PlayerView()) {
+    constructor(private playerService: PlayerService = WrapMethods(new PlayerService()),
+                private playerView: PlayerView = WrapMethods(new PlayerView())) {
     }
 
     init() : void {

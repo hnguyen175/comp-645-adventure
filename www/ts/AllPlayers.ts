@@ -1,3 +1,5 @@
+import wrapMethods from './utilities/WrapMethods.ts';
+
 class AllPlayers {
     private lsAllPlayers: Set<string>;
 
@@ -13,7 +15,7 @@ class AllPlayers {
     static fromStorage(): AllPlayers {
         const json = localStorage.getItem("lsAllPlayers");
         const playersArray: string[] = json ? JSON.parse(json) : [];
-        return new AllPlayers(playersArray);
+        return wrapMethods(new AllPlayers(playersArray));
     }
 
     addPlayer(email: string) {
