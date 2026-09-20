@@ -9,8 +9,7 @@ export default class App {
         this.navController = new NavController();
         this.navController.init();
 
-        document.addEventListener("DOMContentLoaded",
-            () => this.DeviceReady());
+        ons.ready(() => this.DeviceReady());
     }
 
     private async DeviceReady() {
@@ -99,17 +98,30 @@ export default class App {
                 );
                 this.navController.onReloadButtonClick(event);
 
-                this.registerLoadGameButton();
+                this.registerLoadGameEvents();
             }
         );
     }
 
-    private registerLoadGameButton() {
-        document.getElementById("btnLoadGame")?.addEventListener(
+    private registerLoadGameEvents() {
+        const lstPlayers = document.getElementById("lstPlayers");
+        const btnLoadGame = document.getElementById("btnLoadGame");
+
+        if (!lstPlayers || !btnLoadGame) {
+            console.error("Load game elements not found.");
+            return;
+        }
+
+        lstPlayers.addEventListener(
+            "change",
+            (event) => {
+                btnLoadGame.removeAttribute("disabled");
+            }
+        );
+
+        btnLoadGame.addEventListener(
             "click",
             (event) => {
-                console.log("Load Game button clicked");
-                // Implement the load game functionality here
                 this.navController.onLoadGameButtonClick(event);
             }
         );
