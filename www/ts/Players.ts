@@ -1,4 +1,5 @@
 import Player from "./Player.ts";
+import wrapMethods from './utilities/WrapMethods.ts';
 
 export default class Players {
     // private key: string;
@@ -34,7 +35,7 @@ export default class Players {
     }
 
     private static fromJSON(data: Partial<Players>) : Players {
-        const players = Object.assign(new Players(), data);
+        const players = Object.assign(wrapMethods(new Players()), data);
 
         players.players = data.players?.map(
             playerData => Player.fromJSON(playerData)) || [];
