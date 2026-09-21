@@ -13,7 +13,7 @@ export default function wrapMethods<T extends object>(target: T): T {
                 const className = obj.constructor.name;
                 const methodName = String(property);
 
-                const indent = "  ".repeat(depth);
+                const indent = "  ".repeat(depth++);
                 const location = getCallerLocation();
 
                 console.log(
@@ -21,8 +21,6 @@ export default function wrapMethods<T extends object>(target: T): T {
                 );
 
                 const start = performance.now();
-
-                depth++;
 
                 try {
                     // receiver is important:
@@ -33,32 +31,12 @@ export default function wrapMethods<T extends object>(target: T): T {
                     if (result && typeof result.then === "function") {
                         return result.then(
                             (returnValue: any) => {
-                                depth--;
-
-                                const elapsed =
-                                    performance.now() - start;
-
-                                const endIndent =
-                                    "  ".repeat(depth);
-
-                                console.log(
-                                    `${endIndent}← ${className}.${methodName}() ${elapsed.toFixed(2)} ms`
-                                );
+                                endLog(start, className, methodName, console.log);
 
                                 return returnValue;
                             },
                             (error: any) => {
-                                depth--;
-
-                                const elapsed =
-                                    performance.now() - start;
-
-                                const endIndent =
-                                    "  ".repeat(depth);
-
-                                console.error(
-                                    `${endIndent}← ${className}.${methodName}() ERROR ${elapsed.toFixed(2)} ms`
-                                );
+                                endLog(start, className, methodName, console.error);
 
                                 throw error;
                             }
@@ -66,36 +44,26 @@ export default function wrapMethods<T extends object>(target: T): T {
                     }
 
                     // Synchronous
-                    depth--;
-
-                    const elapsed =
-                        performance.now() - start;
-
-                    const endIndent =
-                        "  ".repeat(depth);
-
-                    console.log(
-                        `${endIndent}← ${className}.${methodName}() ${elapsed.toFixed(2)} ms`
-                    );
+                    endLog(start, className, methodName, console.log);
 
                     return result;
                 }
                 catch (error) {
-                    depth--;
-
-                    const elapsed =
-                        performance.now() - start;
-
-                    const endIndent =
-                        "  ".repeat(depth);
-
-                    console.error(
-                        `${endIndent}← ${className}.${methodName}() ERROR ${elapsed.toFixed(2)} ms`
-                    );
+                    endLog(start, className, methodName, console.error);
 
                     throw error;
                 }
             };
+
+            function endLog(start: number, className: string, methodName: string,
+                func: (log: string) => void) {
+                const elapsed = performance.now() - start;
+
+                const endIndent = "  ".repeat(--depth);
+
+                const log = `${endIndent}← ${className}.${methodName}() ${elapsed.toFixed(2)} ms`;
+                func(log);
+            }
         }
     });
 }
