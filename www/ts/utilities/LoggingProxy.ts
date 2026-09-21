@@ -1,4 +1,4 @@
-export default function wrapMethods<T extends object>(target: T): T {
+export default function loggingProxy<T extends object>(target: T): T {
     let depth = 0;
 
     return new Proxy(target, {
@@ -79,7 +79,7 @@ function getCallerLocation(): string {
         .split("\n")
         .find(line =>
             line.includes("http") &&
-            !line.includes("WrapMethods")
+            !line.includes("loggingProxy")
         );
 
     if (!caller) {

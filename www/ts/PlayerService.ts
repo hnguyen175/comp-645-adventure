@@ -2,7 +2,7 @@ import Player from './Player.ts';
 import Players from './Players.ts';
 import allPlayers from './AllPlayers.ts';
 
-import wrapMethods from './utilities/WrapMethods.ts';
+import loggingProxy from './utilities/LoggingProxy.ts';
 
 type PlayerInfoResult = {
     name?: string;
@@ -15,7 +15,7 @@ export default class PlayerService {
     savePlayers(name: string, email: string) : void{
         const player = Player.createRandomPlayer(name, email);
 
-        const players = wrapMethods(new Players());
+        const players = loggingProxy(new Players());
         players.addPlayer(player);
         players.addDefaultPlayers();
 

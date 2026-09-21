@@ -1,5 +1,5 @@
 import NavController from './NavController.ts';
-import wrapMethods from './utilities/WrapMethods.ts';
+import loggingProxy from './utilities/LoggingProxy.ts';
 
 declare const ons: any;
 
@@ -7,7 +7,7 @@ export default class App {
     private navController: NavController;
 
     constructor() {
-        this.navController = wrapMethods(new NavController());
+        this.navController = loggingProxy(new NavController());
         this.navController.init();
 
         ons.ready(() => this.DeviceReady());
@@ -137,4 +137,4 @@ export default class App {
     }
 };
 
-const app = wrapMethods(new App());
+const app = loggingProxy(new App());
