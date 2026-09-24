@@ -1,15 +1,29 @@
-import js from "@eslint/js";
 import globals from "globals";
 import { defineConfig } from "eslint/config";
 import html from "eslint-plugin-html";
+import tseslint from "typescript-eslint";
 
 export default defineConfig([
+  {
+    ignores: ["www/js/**", "www/lib/**"]
+  },
+
   {
     files: ["www/**/*.html"],
     plugins: {
       html
     }
   },
-  { files: ["www/js/*.{js,mjs,cjs}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.browser }},
-  { ignores: ["www/js/sqlite/**", "www/lib/**"] }
+
+  {
+    files: ["www/ts/**/*.ts"],
+
+    extends: [
+      ...tseslint.configs.recommended
+    ],
+
+    languageOptions: {
+      globals: globals.browser
+    }
+  }
 ]);

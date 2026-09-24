@@ -1,7 +1,7 @@
 import loggingProxy from './utilities/LoggingProxy.ts';
 
 class AllPlayers {
-    private lsAllPlayers: Set<string>;
+    private lsAllPlayers!: Set<string>;
 
     private constructor(arrAllPlayers: string[] = []) {
         this.lsAllPlayers = new Set<string>(arrAllPlayers);

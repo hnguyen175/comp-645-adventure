@@ -9,7 +9,7 @@ export default function loggingProxy<T extends object>(target: T): T {
                 return value;
             }
 
-            return function (...args: any[]) {
+            return function (...args: unknown[]) {
                 const className = obj.constructor.name;
                 const methodName = String(property);
 
@@ -30,12 +30,12 @@ export default function loggingProxy<T extends object>(target: T): T {
                     // Async
                     if (result && typeof result.then === "function") {
                         return result.then(
-                            (returnValue: any) => {
+                            (returnValue: unknown) => {
                                 endLog(start, className, methodName, console.log);
 
                                 return returnValue;
                             },
-                            (error: any) => {
+                            (error: unknown) => {
                                 endLog(start, className, methodName, console.error);
 
                                 throw error;
@@ -79,7 +79,7 @@ function getCallerLocation(): string {
         .split("\n")
         .find(line =>
             line.includes("http") &&
-            !line.includes("loggingProxy")
+            !line.includes("LoggingProxy")
         );
 
     if (!caller) {

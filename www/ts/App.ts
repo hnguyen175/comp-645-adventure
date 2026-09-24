@@ -1,20 +1,18 @@
 import NavController from './NavController.ts';
 import loggingProxy from './utilities/LoggingProxy.ts';
 
-declare const ons: any;
-
 export default class App {
     private navController: NavController;
 
     constructor() {
         this.navController = loggingProxy(new NavController());
-        this.navController.init();
 
         ons.ready(() => this.DeviceReady());
     }
 
     private async DeviceReady() {
         console.log("Device is ready");
+        await this.navController.init();
 
         await this.initialize();
 
@@ -28,7 +26,7 @@ export default class App {
             [
                 "views/welcome.html",
                 "views/new-game.html",
-                "views/players.html"
+                // "views/players.html"
             ]
         );
     }
@@ -58,72 +56,18 @@ export default class App {
             (event) => this.navController.onCarouselPriorDisplayingItem(event)
         );
 
-        document.getElementById("btnClearName")?.addEventListener(
-            "click",
-            (event) => {
-                this.emptyInput("inputPlayerName");
-            }
-        );
-
-        document.getElementById("btnClearEmail")?.addEventListener(
-            "click",
-            (event) => {
-                this.emptyInput("inputPlayerEmail");
-            }
-        );
-
         document.getElementById("btnNewGame")?.addEventListener(
             "click",
-            (event) => {
-                this.navController.onCarouselNewGame(event);
+            () => {
+                this.navController.onCarouselNewGame();
             }
         );
 
-        document.getElementById("btnRoll")?.addEventListener(
-            "click",
-            (event) => {
-                console.log("Roll button clicked");
-                // Implement the roll functionality here
-                this.navController.onRollButtonClick(event);
-            }
-        );
         document.getElementById("btnReload")?.addEventListener(
             "click",
-            async (event) => {
+            async () => {
                 console.log("Reload button clicked");
-                await this.navController.loadCarouselItems(
-                    [
-                        "views/load-game.html",
-                        "views/players.html"
-                    ]
-                );
-                this.navController.onReloadButtonClick(event);
-
-                this.registerLoadGameEvents();
-            }
-        );
-    }
-
-    private registerLoadGameEvents() {
-        const lstPlayers = document.getElementById("lstPlayers");
-        const btnLoadGame = document.getElementById("btnLoadGame");
-
-        if (!lstPlayers || !btnLoadGame) {
-            console.error("Load game elements not found.");
-            return;
-        }
-
-        lstPlayers.addEventListener(
-            "change",
-            (event) => {
-                btnLoadGame.removeAttribute("disabled");
-            }
-        );
-
-        btnLoadGame.addEventListener(
-            "click",
-            (event) => {
-                this.navController.onLoadGameButtonClick(event);
+                this.navController.onReloadButtonClick();
             }
         );
     }
@@ -137,4 +81,4 @@ export default class App {
     }
 };
 
-const app = loggingProxy(new App());
+loggingProxy(new App());

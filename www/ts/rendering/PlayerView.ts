@@ -1,8 +1,6 @@
 import Player from "../Player.ts";
 import Players from "../Players.ts";
 
-declare const ons: any;
-
 export default class PlayerView {
     renderPlayerCards(players: Players): void {
         const playerCards = document.getElementById("playerCards");

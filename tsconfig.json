@@ -9,6 +9,10 @@
     "sourceMap": true,
     "incremental": true,
     "rewriteRelativeImportExtensions": true,
+    "allowUmdGlobalAccess": true,
   },
-  "include": ["www/ts/**/*.ts"]
+  "include": [
+    "www/ts/**/*.ts",
+    "www/lib/onsenui/esm/onsenui.d.ts"
+  ]
 }
