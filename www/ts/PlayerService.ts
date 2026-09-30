@@ -53,4 +53,9 @@ export default class PlayerService {
     listPlayersFromStorage(): string[] {
         return allPlayers.getAllPlayers();
     }
+
+    deletePlayers(email: string): void {
+        localStorage.removeItem(email);
+        allPlayers.removePlayer(email);
+    }
 };

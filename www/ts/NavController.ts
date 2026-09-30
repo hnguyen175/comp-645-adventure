@@ -7,6 +7,7 @@ import loggingProxy from './utilities/LoggingProxy.ts';
 import LoadGame2 from './carousel-items/LoadGame2.ts';
 import Welcome from './carousel-items/Welcome.ts';
 import Comrades from './carousel-items/Comrades.ts';
+import DrunkenTavern from './carousel-items/DrunkenTavern.ts';
 
 interface CarouselChangeEvent extends Event {
     carousel: ons.OnsCarouselElement;
@@ -19,6 +20,7 @@ export default class NavController{
     loadGame2!: LoadGame2;
     welcome!: Welcome;
     comrades!: Comrades;
+    drunkenTavern!: DrunkenTavern;
 
     constructor(private playerService: PlayerService = new PlayerService(),
                 private playerView: PlayerView = new PlayerView()
@@ -35,8 +37,9 @@ export default class NavController{
 
         this.newGame = await NewGame.create(this);
         this.welcome = await Welcome.create(this, this.playerService);
-        this.comrades = await Comrades.create();
+        this.comrades = await Comrades.create(this);
         this.loadGame2 = await LoadGame2.create(this, this.playerService);
+        this.drunkenTavern = await DrunkenTavern.create(this, this.playerService);
     }
 
     static showSection(sectionId: string){
@@ -150,7 +153,10 @@ export default class NavController{
     }
 
     async addCarouselItem(carouselItem: CarouselItem) {
-        await this.carousel.appendChild(carouselItem.getCarouselItem());
+        const existingItem = this.carousel.querySelector<HTMLElement>(`ons-carousel-item#${carouselItem.getCarouselItem().id}`);
+        if (!existingItem) {
+            await this.carousel.appendChild(carouselItem.getCarouselItem());
+        }
     }
 
     async loadCarouselItem(carouselItems: CarouselItem[]){
@@ -165,5 +171,23 @@ export default class NavController{
         for (const carouselItem of carouselItems) {
             this.carousel.appendChild(carouselItem.getCarouselItem());
         }
+    }
+
+    async onGameStart(){
+        await this.addCarouselItem(this.drunkenTavern);
+        await this.carousel.next();
+    }
+
+    deleteCarouselItems(carouselItems: CarouselItem[]) {
+        for (const carouselItem of carouselItems) {
+            carouselItem.getCarouselItem().remove();
+        }
+    }
+
+    onDeleteGame(email: string) {
+        this.playerService.deletePlayers(email);
+        this.loadGame2.loadPlayers();
+
+        this.deleteCarouselItems([this.comrades, this.drunkenTavern]);
     }
 };

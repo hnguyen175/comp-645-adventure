@@ -11,6 +11,7 @@ import loadGame2Html from '../www/views/load-game2.html?raw';
 import newGameHtml from '../www/views/new-game.html?raw';
 import playersHtml from '../www/views/players.html?raw';
 import welcomeHtml from '../www/views/welcome.html?raw';
+import drunkenTavernHtml from '../www/views/drunken-tavern.html?raw';
 
 const toastMock = Vitest.vi.fn().mockResolvedValue(undefined);
 
@@ -45,6 +46,9 @@ Vitest.beforeEach(async () => {
         }
         if (url === "../views/welcome.html") {
             return new Response(welcomeHtml);
+        }
+        if (url === "../views/drunken-tavern.html") {
+            return new Response(drunkenTavernHtml);
         }
 
         throw new Error(`Unexpected fetch URL: ${url}`);
@@ -404,7 +408,7 @@ Vitest.test("loadCarouselItems removes all carousel items except welcome", async
 
     const items = carousel.querySelectorAll("ons-carousel-item");
     Vitest.expect(items.length).toBe(4); // welcome + 2 new items
-    Vitest.expect(fetch).toHaveBeenCalledTimes(4);
+    Vitest.expect(fetch).toHaveBeenCalledTimes(5);
 });
 
 Vitest.test("onLoadGame2ButtonClick loads players and navigates to next carousel item", async () => {

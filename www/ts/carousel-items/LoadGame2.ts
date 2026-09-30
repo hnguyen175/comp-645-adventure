@@ -31,10 +31,16 @@ export default class LoadGame2 extends CarouselItem {
 
     list.addEventListener("click", async (event) => {
       const target = event.target as HTMLElement;
+
       const listItem = target.closest("ons-list-item");
       if (listItem) {
         const email = must(listItem.getAttribute("data-email"));
         console.log(`Selected player email: ${email}`);
+
+        if (this.willDeleteGame(email, target)) {
+          return;
+        }
+
         await this.navController.onLoadGame2ButtonClick(email);
 
         list.querySelectorAll("ons-list-item").forEach((item) => {
@@ -43,6 +49,16 @@ export default class LoadGame2 extends CarouselItem {
         listItem?.classList.add("selected");
       }
     });
+  }
+
+  private willDeleteGame(email: string, eventTarget: HTMLElement): boolean {
+    const trashIcon = eventTarget.closest("img.delete-icon");
+    if (trashIcon) {
+      console.log(`Trash icon clicked ${email}`);
+      this.navController.onDeleteGame(email);
+      return true;
+    }
+    return false;
   }
 
   loadPlayers(): void {

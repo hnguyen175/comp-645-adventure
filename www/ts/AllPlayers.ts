@@ -29,6 +29,13 @@ class AllPlayers {
     getAllPlayers(): string[] {
         return Array.from(this.lsAllPlayers);
     }
+
+    removePlayer(email: string) {
+        if (this.lsAllPlayers.has(email)) {
+            this.lsAllPlayers.delete(email);
+            this.saveAllPlayersToStorage();
+        }
+    }
 }
 
 const allPlayers = AllPlayers.fromStorage();

@@ -142,7 +142,7 @@ ons-carousel-item ons-card td:nth-child(2) {
 
 .player-row{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: .8fr 1fr 1fr .2fr;
     width: 100%;
     gap: 10px;
 }
@@ -166,4 +166,9 @@ ons-carousel-item ons-card td:nth-child(2) {
 
 ons-list-item.selected {
     background-color: #ddd;
+}
+
+.delete-icon {
+    font-size: 24px;
+    cursor: pointer;
 }
