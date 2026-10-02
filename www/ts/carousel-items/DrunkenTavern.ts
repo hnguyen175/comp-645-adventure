@@ -4,25 +4,24 @@ import NavController from "../NavController.ts";
 import PlayerService from "../PlayerService.ts";
 
 export default class DrunkenTavern extends CarouselItem {
-  constructor(
-    carouselItem: HTMLElement,
-    private readonly navController: NavController,
-    private readonly playerService: PlayerService) {
-    super(carouselItem);
-  }
+    constructor(
+        carouselItem: HTMLElement,
+        private readonly navController: NavController,
+        private readonly playerService: PlayerService) {
+        super(carouselItem);
+    }
 
-  static async create(
-    navController: NavController,
-    playerService: PlayerService,
-  ): Promise<DrunkenTavern> {
-    const element = must(await this.loadElement("../views/drunken-tavern.html"));
-    const drunkadTavern = new DrunkenTavern(element, navController, playerService);
+    static async create(
+        navController: NavController,
+        playerService: PlayerService,
+    ): Promise<DrunkenTavern> {
+        const element = must(await this.loadElement("../views/drunken-tavern.html"));
+        const drunkadTavern = new DrunkenTavern(element, navController, playerService);
 
-    drunkadTavern.registerEvents();
-    return drunkadTavern;
-  }
+        drunkadTavern.registerEvents();
+        return drunkadTavern;
+    }
 
-  private registerEvents(): void {
-    const carouselItem = must(this.getCarouselItem());
-  }
+    private registerEvents(): void {
+    }
 }

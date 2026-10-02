@@ -21,7 +21,7 @@ export default class App {
         this.RegisterEventHandlers();
     }
 
-    private async initialize(){
+    private async initialize() {
         await this.navController.loadCarouselItem(
             [
                 this.navController.welcome,
@@ -52,8 +52,14 @@ export default class App {
     private RegisterEventHandlers() {
         document.getElementById("carouselNewGame")?.addEventListener(
             "prechange",
-            (event) => this.navController.onCarouselPriorDisplayingItem(event)
+            (event) => {
+                void this.handleButtonClick(event);
+            }
         );
+    }
+
+    private async handleButtonClick(event: Event): Promise<void> {
+        await this.navController.onCarouselPriorDisplayingItem(event);
     }
 };
 

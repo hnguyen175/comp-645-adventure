@@ -3,7 +3,7 @@ import must from "../utilities/RequiredField.ts";
 import CarouselItem from "./CarouselItem.ts";
 
 export default class Comrades extends CarouselItem {
-    constructor(carouselItem: HTMLElement, private readonly navController: NavController){
+    constructor(carouselItem: HTMLElement, private readonly navController: NavController) {
         super(carouselItem);
     }
 
@@ -18,9 +18,13 @@ export default class Comrades extends CarouselItem {
     private registerEvents(): void {
         const carouselItem = must(this.getCarouselItem());
         carouselItem.addEventListener("click", (event) => {
-            if ((event.target as HTMLElement).closest("#btnStartGame")) {
-                this.navController.onGameStart();
-            }
+            void this.handlePlayerClick(event);
         });
+    }
+
+    private async handlePlayerClick(event: Event): Promise<void> {
+        if ((event.target as HTMLElement).closest("#btnStartGame")) {
+            await this.navController.onGameStart();
+        }
     }
 }

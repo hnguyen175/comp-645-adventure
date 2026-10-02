@@ -47,13 +47,14 @@ Vitest.test("renderAllPlayersList2 should render player list items correctly", (
 
     const rows = [...temp.querySelectorAll("ons-list-item")].map(row => ({
         name: row.getAttribute("data-email"),
-        values: [...row.querySelectorAll(".player-row > div")].map(cell => cell.textContent)
+        values: [...row.querySelectorAll(".player-row > div")].map(cell => cell.innerHTML)
     }));
 
+    const imageElement = '<img src=\"images/trash.svg\" alt=\"Delete\" class=\"delete-icon\">';
     Vitest.expect(rows).toEqual([
-        { name: "one", values: ["one", "one", "TestScreen"] },
-        { name: "two", values: ["two", "two", "TestScreen"] },
-        { name: "three", values: ["three", "three", "TestScreen"] }
+        { name: "one", values: ["one", "one", "TestScreen", imageElement] },
+        { name: "two", values: ["two", "two", "TestScreen", imageElement] },
+        { name: "three", values: ["three", "three", "TestScreen", imageElement] }
     ]);
 });
 
@@ -69,7 +70,7 @@ Vitest.test("renderAllPlayersList2 should handle missing players gracefully", ()
     temp.appendChild(document.createElement("div")); // Add a placeholder item
     temp.appendChild(document.createElement("div")); // and another one to ensure we have more than one child
 
-    const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => { });
 
     AllPlayersList.renderAllPlayersList2(temp, players, playerServiceMock as any);
 

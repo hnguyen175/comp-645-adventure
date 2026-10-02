@@ -8,26 +8,30 @@ export default class Welcome extends CarouselItem {
         super(carouselItem);
     }
 
-    static async create(navController: NavController, playerService: PlayerService) : Promise<Welcome>{
+    static async create(navController: NavController, playerService: PlayerService): Promise<Welcome> {
         const element = must(await this.loadElement("../views/welcome.html"));
         const welcome = new Welcome(element, navController, playerService);
 
         welcome.registerEvents();
         await welcome.updateLoadGameButtonState();
 
-       return welcome;
+        return welcome;
     }
 
-    private registerEvents(): void{
+    private registerEvents(): void {
         const carouselItem = this.getCarouselItem();
         carouselItem.addEventListener("click", (event) => {
-            if ((event.target as HTMLElement).closest("#btnNewGame")){
-                this.navController.onCarouselNewGame();
-            }
-            else if ((event.target as HTMLElement).closest("#btnReload")) {
-                this.navController.onReloadButtonClick();
-            }
+            void this.handleButtonClick(event);
         });
+    }
+
+    private async handleButtonClick(event: Event): Promise<void> {
+        if ((event.target as HTMLElement).closest("#btnNewGame")) {
+            await this.navController.onCarouselNewGame();
+        }
+        else if ((event.target as HTMLElement).closest("#btnReload")) {
+            await this.navController.onReloadButtonClick();
+        }
     }
 
     // disable 'reload' button if there are no players in storage

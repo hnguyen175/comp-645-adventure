@@ -17,7 +17,7 @@ export default function loggingProxy<T extends object>(target: T): T {
                 const location = getCallerLocation();
 
                 console.log(
-                    `${indent}→ ${className}.${methodName}() ${location}`
+                    `${indent}→ ${className}.${methodName}(${args}) ${location}`
                 );
 
                 const start = performance.now();
@@ -44,7 +44,7 @@ export default function loggingProxy<T extends object>(target: T): T {
                     }
 
                     // Synchronous
-                    endLog(start, className, methodName, console.log);
+                    endLog(start, className, methodName, console.log, result);
 
                     return result;
                 }
@@ -56,12 +56,12 @@ export default function loggingProxy<T extends object>(target: T): T {
             };
 
             function endLog(start: number, className: string, methodName: string,
-                func: (log: string) => void) {
+                func: (log: string) => void, result?: unknown) {
                 const elapsed = performance.now() - start;
 
                 const endIndent = "  ".repeat(--depth);
 
-                const log = `${endIndent}← ${className}.${methodName}() ${elapsed.toFixed(2)} ms`;
+                const log = `${endIndent}← ${className}.${methodName}() ⮑${result ? result : ""} ${elapsed.toFixed(2)} ms`;
                 func(log);
             }
         }
@@ -82,7 +82,7 @@ function getCallerLocation(): string {
             !(line.includes("LoggingProxy.js")
             )
         );
-            // /\/[^/]+:\d+:\d+\)?$/.test(line) &&
+    // /\/[^/]+:\d+:\d+\)?$/.test(line) &&
 
     if (!caller) {
         return "";
