@@ -37,7 +37,7 @@ Vitest.test("Comrades should be properly initialized", async () => {
 
 Vitest.test("Clicking on the start game button should call onGameStart", async () => {
     const comrades = await Comrades.create(navControllerMock as any);
-    const startGameButton = comrades.getCarouselItem().querySelector<HTMLElement>("#btnStartGame");
+    const startGameButton = comrades.carouselItem.querySelector<HTMLElement>("#btnStartGame");
     Vitest.expect(startGameButton).not.toBeNull();
 
     await startGameButton?.dispatchEvent(new Event("click", { bubbles: true }));
@@ -47,7 +47,7 @@ Vitest.test("Clicking on the start game button should call onGameStart", async (
 
 Vitest.test("Clicking on the list but not the start game button should not call onGameStart", async () => {
     const comrades = await Comrades.create(navControllerMock as any);
-    const div = comrades.getCarouselItem().querySelector<HTMLElement>("#caiComrades .player-cards");
+    const div = comrades.carouselItem.querySelector<HTMLElement>("#caiComrades .player-cards");
     Vitest.expect(div).not.toBeNull();
     await div?.dispatchEvent(new Event("click", { bubbles: true }));
 
@@ -57,9 +57,9 @@ Vitest.test("Clicking on the list but not the start game button should not call 
 Vitest.test("Exception in onGameStart should be caught and logged", async () => {
     const comrades = await Comrades.create(navControllerMock as any);
     Vitest.vi.spyOn(navControllerMock, "onGameStart").mockRejectedValueOnce(new Error("Test error"));
-    Vitest.vi.spyOn(console, "error").mockImplementationOnce(() => {});
+    Vitest.vi.spyOn(console, "error").mockImplementationOnce(() => { });
 
-    const div = comrades.getCarouselItem().querySelector<HTMLElement>("#btnStartGame");
+    const div = comrades.carouselItem.querySelector<HTMLElement>("#btnStartGame");
     Vitest.expect(div).not.toBeNull();
     div?.dispatchEvent(new Event("click", { bubbles: true }));
 

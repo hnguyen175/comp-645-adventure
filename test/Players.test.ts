@@ -63,3 +63,18 @@ Vitest.test("loadPlayersFromStorage from invalid JSON does not throw error", () 
     localStorage.setItem("nonexistent@example.com", "[]");
     Vitest.expect(() => Players.loadPlayersFromStorage("nonexistent@example.com")).not.toThrow();
 });
+
+Vitest.test("randomPlayerPicker returns a player from the players array", () => {
+    const players = new Players();
+    const player1 = Player.getDefaultPlayer();
+    const player2 = Player.getDefaultPlayer();
+    players.addPlayer(player1);
+    players.addPlayer(player2);
+
+    const pickedPlayer1 = players.randomPlayerPicker();
+    const pickedPlayer2 = players.randomPlayerPicker();
+
+    Vitest.expect(pickedPlayer1).not.toBe(pickedPlayer2); // They may be equal, but it's unlikely
+    Vitest.expect(players.players).toContain(players.randomPlayerPicker());
+    Vitest.expect(players.players).toContain(players.randomPlayerPicker());
+});

@@ -1,6 +1,7 @@
 import * as Vitest from 'vitest';
 import createPlayerCard from '../../www/ts/rendering/PlayerDisplay.ts';
 import Player from '../../www/ts/Player.ts';
+import must from '../../www/ts/utilities/RequiredField.ts';
 
 Vitest.describe('createPlayerCard for regular players, and mysterious players', () => {
     Vitest.test.each([
@@ -33,8 +34,8 @@ Vitest.describe('createPlayerCard for regular players, and mysterious players', 
             ]
         ]
     ] as const)("createPlayerCard should return a string containing the player name and stats when showStrength is %s", (showStrength, present, absent) => {
-        
-// Vitest.test('createPlayerCard should return a string containing the player name and stats', () => {
+
+        // Vitest.test('createPlayerCard should return a string containing the player name and stats', () => {
         const player = new Player('John Doe', 'john.doe@example.com');
         player.hp = 100;
         player.str = 50;
@@ -49,9 +50,11 @@ Vitest.describe('createPlayerCard for regular players, and mysterious players', 
         const container = document.createElement('div');
         container.innerHTML = playerCardHtml;
         Vitest.expect(container.querySelector('ons-card.player-card')).not.toBeNull();
-        Vitest.expect(container.querySelector('ons-card ons-list-header')?.textContent).toBe('John Doe');
-        
-        const result = container.querySelectorAll('ons-list ons-list-item.player-stat');
+        const listHeader = must(container.querySelector('ons-card ons-list-header'));
+        const listHeaderName = must(listHeader.querySelector('div.right[data-property="name"]'));
+        Vitest.expect(listHeaderName?.textContent).toBe('John Doe');
+
+        const result = container.querySelectorAll('ons-list ons-list-item.player-stat[data-property]');
         const stats = [...result].map(item => item.textContent.trim());
         present.forEach(stat => {
             Vitest.expect(stats).toContain(stat);

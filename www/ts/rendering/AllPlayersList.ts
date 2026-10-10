@@ -1,28 +1,19 @@
 import PlayerService from "../PlayerService.ts";
+import must from "../utilities/RequiredField.ts";
+import currentGameState from "../GameState.ts";
 
 export default class AllPlayersList {
-    static renderAllPlayersList(playerListElement: ons.OnsSelectElement, players: string[]): void {
-        // Remove old player options, but keep the first placeholder option
-        while (playerListElement.length > 1) {
-            playerListElement.removeChild(playerListElement.lastElementChild!);
-        }
-
-        players.forEach(playerEmail => {
-            const optionElement = document.createElement("option");
-            optionElement.value = playerEmail;
-            optionElement.textContent = playerEmail;
-
-            playerListElement?.appendChild(optionElement);
-        });
-    }
-
-    static renderAllPlayersList2(playerListElement: HTMLElement, players: string[], playerService: PlayerService): void {
+    static renderAllPlayersList(playerListElement: HTMLElement, playerService: PlayerService): void {
         // Remove old player options, but keep the first placeholder option
         while (playerListElement.children.length > 1) {
             playerListElement.removeChild(playerListElement.lastElementChild!);
         }
 
-        players.forEach(playerEmail => {
+        const currentPlayerEmail = currentGameState.getPlayers()?.players[0]?.email;
+        // let selectedItem: HTMLElement | null = null;
+        let selectedItem: HTMLElement | undefined;
+
+        must(playerService.listPlayersFromStorage()).forEach(playerEmail => {
             const player = playerService.loadPlayers(playerEmail);
             if (!player) {
                 console.error(`Player with email ${playerEmail} not found.`);
@@ -35,6 +26,10 @@ export default class AllPlayersList {
             const onsListItem = document.createElement("ons-list-item");
             onsListItem.setAttribute("tappable", "");
             onsListItem.setAttribute("data-email", playerEmail);
+            if (playerEmail === currentPlayerEmail) {
+                onsListItem.classList.add("selected");
+                selectedItem = onsListItem;
+            }
 
             const rowDiv = onsListItem.appendChild(document.createElement("div"));
             rowDiv.classList.add("player-row");
@@ -53,5 +48,7 @@ export default class AllPlayersList {
 
             playerListElement?.appendChild(onsListItem);
         });
+
+        selectedItem?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 };

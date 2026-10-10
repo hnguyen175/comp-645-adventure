@@ -1,6 +1,7 @@
 import CarouselItem from "./CarouselItem.ts";
 import NavController from "../NavController.ts";
 import must from "../utilities/RequiredField.ts"
+import loggingProxy from "../utilities/LoggingProxy.ts";
 
 export default class NewGame extends CarouselItem {
     constructor(carouselItem: HTMLElement, private readonly navController: NavController) {
@@ -9,13 +10,13 @@ export default class NewGame extends CarouselItem {
 
     static async create(navController: NavController): Promise<NewGame> {
         const element = must(await this.loadElement("../views/new-game.html"));
-        const newGame = new NewGame(element, navController);
+        const newGame = loggingProxy(new NewGame(element, navController));
         newGame.registerEvents();
         return newGame;
     }
 
     private registerEvents(): void {
-        this.getCarouselItem().addEventListener("click", (event) => {
+        this.carouselItem.addEventListener("click", (event) => {
             void this.handleButtonClick(event);
         });
     }
@@ -33,7 +34,7 @@ export default class NewGame extends CarouselItem {
     }
 
     private emptyInput(inputField: string): void {
-        const input = this.getCarouselItem().querySelector(`#${inputField}`) as HTMLInputElement;
+        const input = this.carouselItem.querySelector(`#${inputField}`) as HTMLInputElement;
         if (input) {
             input.value = "";
             input.focus();

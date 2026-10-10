@@ -32,14 +32,14 @@ Vitest.test("NewGame should be properly initialized", async () => {
     const newGame = await NewGame.create(navControllerMock as any);
     Vitest.expect(newGame).not.toBeNull();
 
-    (newGame.getCarouselItem().querySelector("#btnRoll") as HTMLButtonElement).click();
+    (newGame.carouselItem.querySelector("#btnRoll") as HTMLButtonElement).click();
     Vitest.expect(navControllerMock.onRollButtonClick).toHaveBeenCalled();
 
     const newGameEmptyInputSpy = Vitest.vi.spyOn(newGame, "emptyInput");
-    (newGame.getCarouselItem().querySelector("#btnClearName") as HTMLButtonElement).click();
+    (newGame.carouselItem.querySelector("#btnClearName") as HTMLButtonElement).click();
     Vitest.expect(newGameEmptyInputSpy).toHaveBeenCalledWith("onsPlayerName");
 
-    (newGame.getCarouselItem().querySelector("#btnClearEmail") as HTMLButtonElement).click();
+    (newGame.carouselItem.querySelector("#btnClearEmail") as HTMLButtonElement).click();
     Vitest.expect(newGameEmptyInputSpy).toHaveBeenCalledWith("onsPlayerEmail");
 });
 
@@ -66,10 +66,10 @@ Vitest.test("NewGame should not throw error when emptyInput is called with non-e
 
     Vitest.expect(newGame).not.toBeNull();
 
-    (newGame.getCarouselItem().querySelector("#btnClearName") as HTMLButtonElement).click();
+    (newGame.carouselItem.querySelector("#btnClearName") as HTMLButtonElement).click();
     Vitest.expect(newGameEmptyInputSpy).toHaveBeenCalledWith("onsPlayerName");
 
-    (newGame.getCarouselItem().querySelector("#btnClearEmail") as HTMLButtonElement).click();
+    (newGame.carouselItem.querySelector("#btnClearEmail") as HTMLButtonElement).click();
     Vitest.expect(newGameEmptyInputSpy).toHaveBeenCalledWith("onsPlayerEmail");
 });
 

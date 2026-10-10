@@ -12,6 +12,7 @@ import must from './utilities/RequiredField.ts';
 
 import currentGameState from './GameState.ts';
 import loggingProxy from './utilities/LoggingProxy.ts';
+import TemplateGameTasks from './templates/TemplateGameTasks.ts';
 
 interface CarouselChangeEvent extends Event {
     carousel: ons.OnsCarouselElement;
@@ -25,10 +26,11 @@ export default class NavController {
     welcome!: Welcome;
     comrades!: Comrades;
     drunkenTavern!: DrunkenTavern;
+    templateGameTask!: TemplateGameTasks;
 
     constructor(private playerService: PlayerService = loggingProxy(new PlayerService()),
         private playerView: PlayerView = new PlayerView()
-    ) {}
+    ) { }
 
     async init(): Promise<void> {
         const carousel = document.getElementById("carouselNewGame") as ons.OnsCarouselElement | null;
@@ -38,11 +40,13 @@ export default class NavController {
 
         this.carousel = carousel;
 
+        this.templateGameTask = new TemplateGameTasks(this);
+
         this.newGame = await NewGame.create(this);
         this.welcome = await Welcome.create(this, this.playerService);
         this.comrades = await Comrades.create(this);
         this.loadGame = await LoadGame.create(this, this.playerService);
-        this.drunkenTavern = await DrunkenTavern.create();
+        this.drunkenTavern = await DrunkenTavern.create(this.templateGameTask);
     }
 
     static showSection(sectionId: string) {
@@ -99,6 +103,8 @@ export default class NavController {
         this.playerView.renderPlayerCards("caiDrunkenTavern", must(currentGameState.getPlayers()?.players));
         // create villain
         this.playerView.renderPlayerCards("divDrunkenTavernVillain", [this.playerService.createVillain()], false);
+        // need to tell the carousel item to reinitialze the random player picker, so that it can pick a new random player from the current players
+        this.drunkenTavern.initializePage();
     }
 
     private priorDisplayingPlayers() {
@@ -166,9 +172,9 @@ export default class NavController {
     }
 
     async addCarouselItem(carouselItem: CarouselItem) {
-        const existingItem = this.carousel.querySelector<HTMLElement>(`ons-carousel-item#${carouselItem.getCarouselItem().id}`);
+        const existingItem = this.carousel.querySelector<HTMLElement>(`ons-carousel-item#${carouselItem.carouselItem.id}`);
         if (!existingItem) {
-            this.carousel.appendChild(carouselItem.getCarouselItem());
+            this.carousel.appendChild(carouselItem.carouselItem);
         }
     }
 
@@ -176,7 +182,7 @@ export default class NavController {
         this.cleanupCarouselItems();
 
         for (const carouselItem of carouselItems) {
-            this.carousel.appendChild(carouselItem.getCarouselItem());
+            this.carousel.appendChild(carouselItem.carouselItem);
         }
     }
 
@@ -200,9 +206,21 @@ export default class NavController {
         await this.resetCarouselToWelcome();
     }
 
-    private async resetCarouselToWelcome() {
-        await this.carousel.prev();
+    async resetCarouselToWelcome() {
+        await this.resetCarouselToCarouselItem(this.welcome);
+    }
 
+    async resetCarouselToLoadGame() {
+        const loadGameItem = this.carousel.querySelector<HTMLElement>(`ons-carousel-item#${this.loadGame.carouselItem.id}`);
+        if (!loadGameItem) {
+            this.newGame.carouselItem.replaceWith(this.loadGame.carouselItem);
+        }
+        await this.resetCarouselToCarouselItem(this.loadGame);
+    }
+
+    async resetCarouselToCarouselItem(carouselItem: CarouselItem) {
+        const index = must(this.getCarouselItemIndex(carouselItem));
+        await this.carousel.setActiveIndex(index);
         this.cleanupCarouselItems();
     }
 
@@ -223,4 +241,16 @@ export default class NavController {
     private getActiveIndex(): number {
         return (this.carousel.getActiveIndex as unknown as () => number)();
     }
-};
+
+    private getCarouselItemIndex(carouselItem: CarouselItem): number {
+        const items = (this.carousel as HTMLElement).querySelectorAll("ons-carousel-item");
+        let index = 0;
+        for (const item of items) {
+            if (item.id === carouselItem.carouselItem.id) {
+                return index;
+            }
+            index++;
+        }
+        return -1; // Return -1 if the carousel item is not found
+    }
+}

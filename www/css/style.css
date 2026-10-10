@@ -206,3 +206,9 @@ ons-list-header img.avatar {
 ons-list-header.list-item__icon {
     display: flex;
 }
+
+#divDrunkenTavernChallenge {
+    font-family: system-ui, sans-serif;
+    font-size: 20px;
+    text-align: center;
+}

@@ -1,7 +1,7 @@
 export default abstract class CarouselItem {
-    constructor (private readonly carouselItem : HTMLElement) {
+    constructor(private readonly _carouselItem: HTMLElement) {
     }
-    
+
     static async loadElement(htmlPath: string): Promise<HTMLElement> {
 
         const response = await fetch(htmlPath);
@@ -10,11 +10,11 @@ export default abstract class CarouselItem {
         return ons.createElement(html.trim());
     }
 
-    getCarouselItem() : HTMLElement{
-        return this.carouselItem;
+    get carouselItem(): HTMLElement {
+        return this._carouselItem;
     }
 
-    toString() : string {
+    toString(): string {
         return `name: ${this.constructor.name}, id: ${this.carouselItem.id}`;
     }
 }
