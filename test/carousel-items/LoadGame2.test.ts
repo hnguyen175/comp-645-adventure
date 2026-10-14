@@ -1,7 +1,7 @@
 import * as Vitest from 'vitest';
 import LoadGame from '../../www/ts/carousel-items/LoadGame';
 import Player from '../../www/ts/Player';
-import Players from '../../www/ts/Players';
+import Players from '../../www/ts/Party';
 import AllPlayersList from '../../www/ts/rendering/AllPlayersList';
 
 const loadGameHtml = '../../www/views/load-game.html?raw';

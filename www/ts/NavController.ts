@@ -13,6 +13,7 @@ import must from './utilities/RequiredField.ts';
 import currentGameState from './GameState.ts';
 import loggingProxy from './utilities/LoggingProxy.ts';
 import TemplateGameTasks from './templates/TemplateGameTasks.ts';
+import Forest from './carousel-items/Forest.ts';
 
 interface CarouselChangeEvent extends Event {
     carousel: ons.OnsCarouselElement;
@@ -27,6 +28,9 @@ export default class NavController {
     comrades!: Comrades;
     drunkenTavern!: DrunkenTavern;
     templateGameTask!: TemplateGameTasks;
+    forest!: Forest;
+
+    private gameLevels: Map<string, CarouselItem> = new Map();
 
     constructor(private playerService: PlayerService = loggingProxy(new PlayerService()),
         private playerView: PlayerView = new PlayerView()
@@ -46,7 +50,11 @@ export default class NavController {
         this.welcome = await Welcome.create(this, this.playerService);
         this.comrades = await Comrades.create(this);
         this.loadGame = await LoadGame.create(this, this.playerService);
-        this.drunkenTavern = await DrunkenTavern.create(this.templateGameTask);
+        this.drunkenTavern = await DrunkenTavern.create(this.playerService, this.templateGameTask);
+        this.forest = await Forest.create(this.templateGameTask);
+
+        this.gameLevels.set("DrunkenTavern", this.drunkenTavern);
+        this.gameLevels.set("Forest", this.forest);
     }
 
     static showSection(sectionId: string) {
@@ -80,7 +88,7 @@ export default class NavController {
                 await this.priorWelcome();
                 break;
             case "caiComrades":
-                this.priorDisplayingPlayers();
+                await this.priorDisplayingPlayers();
                 break;
             case "caiLoadGame":
                 this.priorLoadGame();
@@ -89,6 +97,17 @@ export default class NavController {
                 this.priorDisplayingDrunkenTavern();
                 break;
         };
+    }
+
+    async onCarouselPostDisplayingItem(event: Event) {
+        const activeItem = NavController.getActiveCarouselItem(event);
+        console.log(`Post change event for carousel item with id: ${activeItem?.id}`);
+        switch (activeItem?.id) {
+            case "caiComrades":
+                this.postDisplayingComrades();
+                break;
+            // Add more cases here for other carousel items if needed
+        }
     }
 
     private priorLoadGame() {
@@ -107,8 +126,12 @@ export default class NavController {
         this.drunkenTavern.initializePage();
     }
 
-    private priorDisplayingPlayers() {
+    private async priorDisplayingPlayers() {
         this.playerView.renderPlayerCards("caiComrades", must(currentGameState.getPlayers()?.players));
+    }
+
+    private postDisplayingComrades() {
+        this.cleanupCarouselItems();
     }
 
     private static getActiveCarouselItem(event: Event) {
@@ -173,9 +196,12 @@ export default class NavController {
 
     async addCarouselItem(carouselItem: CarouselItem) {
         const existingItem = this.carousel.querySelector<HTMLElement>(`ons-carousel-item#${carouselItem.carouselItem.id}`);
-        if (!existingItem) {
-            this.carousel.appendChild(carouselItem.carouselItem);
+        if (existingItem) {
+            return;
         }
+
+        this.cleanupCarouselItems();
+        this.carousel.appendChild(carouselItem.carouselItem);
     }
 
     loadCarouselItem(carouselItems: CarouselItem[]) {
@@ -187,7 +213,7 @@ export default class NavController {
     }
 
     async onGameStart() {
-        await this.addCarouselItem(this.drunkenTavern);
+        await this.addCarouselItem(this.gameLevels.get(must(currentGameState.getPlayers())?.currentScreen) as CarouselItem);
         await this.carousel.next();
     }
 

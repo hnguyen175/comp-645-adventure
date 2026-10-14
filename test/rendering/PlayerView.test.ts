@@ -1,6 +1,6 @@
 import * as Vitest from 'vitest';
 import PlayerView from '../../www/ts/rendering/PlayerView';
-import Players from '../../www/ts/Players';
+import Players from '../../www/ts/Party';
 import Player from '../../www/ts/Player';
 
 let playerView: PlayerView = null as unknown as PlayerView;

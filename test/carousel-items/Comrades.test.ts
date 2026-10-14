@@ -65,6 +65,6 @@ Vitest.test("Exception in onGameStart should be caught and logged", async () => 
 
     await Vitest.vi.waitFor(() => {
         Vitest.expect(navControllerMock.onGameStart).toHaveBeenCalledOnce();
-        Vitest.expect(console.error).toHaveBeenCalledWith("Error in onGameStart:", Vitest.expect.any(Error));
+        Vitest.expect(console.error).toHaveBeenCalledWith("Unhandled promise rejection:", new Error("Test error"));
     });
 });

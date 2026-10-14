@@ -1,6 +1,6 @@
 import * as Vitest from 'vitest';
 import gameState from '../www/ts/GameState';
-import Players from '../www/ts/Players';
+import Players from '../www/ts/Party';
 import Player from '../www/ts/Player';
 
 Vitest.test('GameState get and set methods', () => {

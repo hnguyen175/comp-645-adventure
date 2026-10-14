@@ -1,4 +1,5 @@
 import NavController from "../NavController.ts";
+import { fireAndForget } from "../utilities/AsyncUtils.ts";
 import loggingProxy from "../utilities/LoggingProxy.ts";
 import must from "../utilities/RequiredField.ts";
 import CarouselItem from "./CarouselItem.ts";
@@ -20,10 +21,10 @@ export default class Comrades extends CarouselItem {
         const carouselItem = must(this.carouselItem);
         carouselItem.addEventListener("click", (event) => {
             if ((event.target as HTMLElement).closest("#btnStartGame")) {
-                void this.navController.onGameStart().catch((error) => {
-                    console.error("Error in onGameStart:", error);
-                });
-            }
-        });
-    }
+                fireAndForget(
+                    this.navController.onGameStart()
+                );
+            };
+        })
+    };
 }

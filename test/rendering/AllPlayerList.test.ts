@@ -1,7 +1,7 @@
 import * as Vitest from 'vitest';
 
 import AllPlayersList from '../../www/ts/rendering/AllPlayersList';
-import Players from '../../www/ts/Players';
+import Players from '../../www/ts/Party';
 import Player from '../../www/ts/Player';
 import currentGameState from '../../www/ts/GameState';
 

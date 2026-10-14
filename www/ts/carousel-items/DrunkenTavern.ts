@@ -4,6 +4,7 @@ import currentGameState from "../GameState.ts";
 import Player from "../Player.ts";
 import loggingProxy from "../utilities/LoggingProxy.ts";
 import TemplateGameTasks from "../templates/TemplateGameTasks.ts";
+import PlayerService from "../PlayerService.ts";
 
 type ChallengeResult = {
     outcome: "win" | "lose" | "tie";
@@ -24,14 +25,15 @@ type ChallengeData = {
 
 export default class DrunkenTavern extends CarouselItem {
     constructor(
+        private readonly playerService: PlayerService,
         carouselItem: HTMLElement
     ) {
         super(carouselItem);
     }
 
-    static async create(template: TemplateGameTasks): Promise<DrunkenTavern> {
+    static async create(playerService: PlayerService, template: TemplateGameTasks): Promise<DrunkenTavern> {
         const element = must(await this.loadElement("../views/drunken-tavern.html"));
-        const drunkadTavern = loggingProxy(new DrunkenTavern(element));
+        const drunkadTavern = loggingProxy(new DrunkenTavern(playerService, element));
 
         const divDurnkenTavern = must(drunkadTavern.carouselItem.querySelector<HTMLElement>("#divDrunkenTavernChallenge"));
 
@@ -88,6 +90,11 @@ export default class DrunkenTavern extends CarouselItem {
 
         divDrunkenTavernChallenge.textContent = challengeResult.message;
         this.toggleChallengeButtons(challengeResult.disableChallengeButtons, false);
+
+        if (challengeResult.outcome === "win") {
+            this.nextChallenge();
+            PlayerService.saveActivePlayers();
+        }
     }
 
     // private challengeResult: ChallengeResult = null as unknown as ChallengeResult;
@@ -146,5 +153,10 @@ export default class DrunkenTavern extends CarouselItem {
             message: `The challenge has ended in a tie after ${this.tieBreakeChallenges} attempts. ${challengeData.playerChallengeName}'s ${challengeData.challengeName} (${challengeData.playerChallengeValue}) is equal to the ${challengeData.villainChallengeName}.`,
             disableChallengeButtons: [challengeData.challengeName.toLowerCase() as keyof Player]
         } as ChallengeResult;
+    }
+
+    private nextChallenge(): void {
+        const players = must(currentGameState.getPlayers());
+        players.currentScreen = "Forest";
     }
 }

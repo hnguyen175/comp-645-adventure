@@ -1,6 +1,6 @@
 import * as Vitest from 'vitest';
 
-import Players from '../www/ts/Players';
+import Players from '../www/ts/Party';
 import Player from '../www/ts/Player';
 import PlayerService from '../www/ts/PlayerService';
 

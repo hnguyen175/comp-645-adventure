@@ -1,4 +1,5 @@
 import NavController from './NavController.ts';
+import { fireAndForget } from './utilities/AsyncUtils.ts';
 import loggingProxy from './utilities/LoggingProxy.ts';
 
 export default class App {
@@ -51,15 +52,19 @@ export default class App {
 
     private RegisterEventHandlers() {
         document.getElementById("carouselNewGame")?.addEventListener(
-            "prechange",
-            (event) => {
-                void this.handleButtonClick(event);
-            }
+            "prechange", (event) => {
+                fireAndForget(
+                    this.navController.onCarouselPriorDisplayingItem(event)
+                );
+            },
         );
-    }
-
-    private async handleButtonClick(event: Event): Promise<void> {
-        await this.navController.onCarouselPriorDisplayingItem(event);
+        document.getElementById("carouselNewGame")?.addEventListener(
+            "postchange", (event) => {
+                fireAndForget(
+                    this.navController.onCarouselPostDisplayingItem(event)
+                );
+            },
+        );
     }
 };
 
