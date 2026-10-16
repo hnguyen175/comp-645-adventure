@@ -104,12 +104,12 @@ export default class Player {
     }
 
     public static getDefaultPlayer(): Player {
-        const randomName = Player.namePool.getRandomItem();
+        const randomName = Player.namePool.draw();
         return Player.createRandomPlayer(randomName, `${randomName.toLowerCase()}@comp645.com`);
     }
 
     public static getVillainPlayer(): Player {
-        const randomVillainName = Player.villainNamePool.getRandomItem();
+        const randomVillainName = Player.villainNamePool.draw();
         return Player.createRandomPlayer(randomVillainName, `${randomVillainName.toLowerCase()}@comp645.com`);
     }
 

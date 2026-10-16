@@ -3,12 +3,13 @@ import must from "../utilities/RequiredField.ts";
 import createPlayerCard from "./PlayerDisplay.ts";
 
 export default class PlayerView {
-    renderPlayerCards(carouselId: string, players: Player[], showStrength = true): void {
+    renderPlayerCards(carouselId: string, players: Player[], columns: string[] = [
+        'hp', 'str', 'spd', 'mp', 'luk', 'wep', 'cls']): void {
         const playerCards = must(document.querySelector(`#${carouselId} .player-cards`)) as HTMLElement;
 
         playerCards.innerHTML = ""; // Clear previous content
         players.forEach((player) => {
-            playerCards.innerHTML += createPlayerCard(player, showStrength);
+            playerCards.innerHTML += createPlayerCard(player, columns);
         });
     };
 

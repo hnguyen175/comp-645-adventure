@@ -64,7 +64,7 @@ export default class Party {
             const randomRange = Array.from({ length: this.players.length }, (_, i) => i);
             this._shuffleBag = new ShuffleBag(randomRange);
         }
-        const randomIndex = this._shuffleBag.getRandomItem();
+        const randomIndex = this._shuffleBag.draw();
         return this.players[randomIndex];
     }
 };

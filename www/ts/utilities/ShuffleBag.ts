@@ -23,7 +23,7 @@ export default class ShuffleBag<T> {
 
     // Guarantees no consecutive duplicate picks
     // when originalItems contains at least 2 unique items.
-    public getRandomItem(): T {
+    public draw(): T {
         let pickedItem: T;
         if (this.items.length === 0) {
             this.items = ShuffleBag.shuffleItems(this.originalItems);

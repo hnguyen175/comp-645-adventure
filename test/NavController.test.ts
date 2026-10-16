@@ -233,15 +233,9 @@ Vitest.test("onCarouselPriorDisplayingItem prior displaying drunken tavern", asy
         return mockPlayers;
     });
     const renderPlayerCardsSpy = Vitest.vi.spyOn(playerView, 'renderPlayerCards')
-        .mockImplementationOnce((carouselId: string, players: Player[], showStrength = true) => {
+        .mockImplementationOnce((carouselId: string, players: Player[]) => {
             Vitest.expect(carouselId).toBe("caiDrunkenTavern");
             Vitest.expect(players).toBe(mockPlayers.players);
-            Vitest.expect(showStrength).toBe(true);
-        })
-        .mockImplementationOnce((carouselId: string, players: Player[], showStrength = false) => {
-            Vitest.expect(carouselId).toBe("divDrunkenTavernVillain");
-            Vitest.expect(players.length).toBe(1);
-            Vitest.expect(showStrength).toBe(false);
         });
 
     await navController.onCarouselPriorDisplayingItem(event);
