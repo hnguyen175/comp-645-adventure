@@ -3,15 +3,26 @@ import must from "../utilities/RequiredField.ts";
 import createPlayerCard from "./PlayerDisplay.ts";
 
 export default class PlayerView {
-    renderPlayerCards(carouselId: string, players: Player[], columns: string[] = [
-        'hp', 'str', 'spd', 'mp', 'luk', 'wep', 'cls']): void {
-        const playerCards = must(document.querySelector(`#${carouselId} .player-cards`)) as HTMLElement;
+    renderPlayerCards(carouselItem: HTMLElement, players: Player[], columns: string[] = ['hp', 'str', 'spd', 'mp', 'luk', 'wep', 'cls']): void {
+        const anchor = carouselItem.id;
+        this.renderPlayerCardsByName(carouselItem, anchor, players, columns);
+        // const playerCards = must(carouselItem.querySelector(`#${anchor} .player-cards`)) as HTMLElement;
 
+        // this.drawPlayerCards(playerCards, players, columns);
+    };
+
+    renderPlayerCardsByName(carouselItem: HTMLElement, playerCardsContainer: string, players: Player[], columns: string[] = ['hp', 'str', 'spd', 'mp', 'luk', 'wep', 'cls']): void {
+        const playerCards = must(carouselItem.querySelector(`#${playerCardsContainer} .player-cards`)) as HTMLElement;
+
+        this.drawPlayerCards(playerCards, players, columns);
+    };
+
+    private drawPlayerCards(playerCards: HTMLElement, players: Player[], columns: string[]) {
         playerCards.innerHTML = ""; // Clear previous content
         players.forEach((player) => {
             playerCards.innerHTML += createPlayerCard(player, columns);
         });
-    };
+    }
 
     // TODO - move this to class page
     showValidationToast(input: HTMLInputElement, message: string) {

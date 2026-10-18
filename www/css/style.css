@@ -234,5 +234,5 @@ div#right {
 }
 
 .player-stat.row-flash {
-    animation: flash 2s ease-in-out;
+    animation: flash 10s ease-in-out;
 }

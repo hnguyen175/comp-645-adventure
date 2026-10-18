@@ -1,5 +1,3 @@
-import must from "../utilities/RequiredField.ts";
-
 export default abstract class CarouselItem {
 
     constructor(private readonly _carouselItem: HTMLElement) {

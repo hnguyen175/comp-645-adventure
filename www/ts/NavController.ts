@@ -14,6 +14,10 @@ import currentGameState from './GameState.ts';
 import loggingProxy from './utilities/LoggingProxy.ts';
 import TemplateGameTasks from './templates/TemplateGameTasks.ts';
 import FangornForest from './carousel-items/FangornForest.ts';
+import ShuffleBag from './utilities/ShuffleBag.ts';
+import Mountain from './carousel-items/Mountain.ts';
+import Lake from './carousel-items/Lake.ts';
+import Bridge from './carousel-items/Bridge.ts';
 
 interface CarouselChangeEvent extends Event {
     carousel: ons.OnsCarouselElement;
@@ -86,12 +90,6 @@ export default class NavController {
             case "caiLoadGame":
                 this.priorLoadGame();
                 break;
-            case "caiDrunkenTavern":
-                this.priorDisplayingDrunkenTavern();
-                break;
-            case "caiForest":
-                this.priorDisplayingForest();
-                break;
         };
     }
 
@@ -113,20 +111,8 @@ export default class NavController {
         await this.welcome.updateLoadGameButtonState();
     }
 
-    private priorDisplayingDrunkenTavern() {
-        this.playerView.renderPlayerCards("caiDrunkenTavern", must(currentGameState.getPlayers()?.players));
-        // create villain
-        this.playerView.renderPlayerCards("divDrunkenTavernVillain", [this.playerService.createVillain()], ['wep', 'cls']);
-        // need to tell the carousel item to reinitialze the random player picker, so that it can pick a new random player from the current players
-        this.drunkenTavern.initializePage();
-    }
-
     private async priorDisplayingPlayers() {
-        this.playerView.renderPlayerCards("caiComrades", must(currentGameState.getPlayers()?.players));
-    }
-
-    private priorDisplayingForest() {
-        this.forest.initializePage();
+        this.playerView.renderPlayerCards(this.comrades.carouselItem, must(currentGameState.getPlayers()?.players));
     }
 
     private postDisplayingComrades() {
@@ -211,15 +197,28 @@ export default class NavController {
         }
     }
 
+    // instantiate the next challenge based on the current screen which is stored in LocalStorage. This is called when the user clicks on the "Start Game" button in the Comrades screen.
     async onGameStart() {
         switch (must(currentGameState.getPlayers())?.currentScreen) {
             case "DrunkenTavern":
-                this.drunkenTavern = await DrunkenTavern.create(this.playerService, this.templateGameTask);
+                this.drunkenTavern = await DrunkenTavern.create(this, this.playerService, this.templateGameTask);
                 await this.addCarouselItem(this.drunkenTavern);
                 break;
-            case "Forest":
-                this.forest = await FangornForest.create(this.templateGameTask);
+            case "FangornForest":
+                this.forest = await FangornForest.create(this, this.playerService, this.templateGameTask);
                 await this.addCarouselItem(this.forest);
+                break;
+            case "Lake":
+                const lake = await Lake.create(this, this.playerService, this.templateGameTask);
+                await this.addCarouselItem(lake);
+                break;
+            case "Bridge":
+                const bridge = await Bridge.create(this, this.playerService, this.templateGameTask);
+                await this.addCarouselItem(bridge);
+                break;
+            case "Mountain":
+                const mountain = await Mountain.create(this, this.playerService, this.templateGameTask);
+                await this.addCarouselItem(mountain);
                 break;
             default:
                 console.error(`Unknown currentScreen: ${must(currentGameState.getPlayers())?.currentScreen}`);
@@ -289,5 +288,18 @@ export default class NavController {
             index++;
         }
         return -1; // Return -1 if the carousel item is not found
+    }
+
+    static lbmChallenges = new ShuffleBag([Lake, Bridge, Mountain]);
+    async createNextChallenge(carouselItem: CarouselItem): Promise<CarouselItem> {
+        switch (carouselItem.constructor.name) {
+            case FangornForest.name:
+                const challengeType = NavController.lbmChallenges.draw();
+                return await challengeType.create(this, this.playerService, this.templateGameTask);
+            case DrunkenTavern.name:
+                return await FangornForest.create(this, this.playerService, this.templateGameTask);
+            default:
+                throw new Error(`Unknown carousel item type: ${carouselItem.constructor.name}`);
+        }
     }
 }

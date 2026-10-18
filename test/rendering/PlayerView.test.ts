@@ -23,9 +23,10 @@ Vitest.test('renderPlayerCards should render player cards correctly', () => {
 
     const playerCards = document.querySelector("#caiComrades .player-cards") as HTMLElement;
 
-    playerView.renderPlayerCards("caiComrades", players.players);
+    playerView.renderPlayerCardsByName(document.firstElementChild as HTMLElement,
+        "caiComrades", players.players);
 
-    Vitest.expect(playerCards.querySelector("ons-card.player-card ons-list ons-list-header.list-item__icon div.left img.avatar")?.getAttribute("src")).toBe(`https://api.dicebear.com/10.x/pixel-art/svg?seed=${encodeURIComponent(player1.id)}&size=20`);
+    Vitest.expect(playerCards.querySelector("ons-card.player-card ons-list ons-list-header.list-item__icon div.left img.avatar")?.getAttribute("src")).toBe(`https://api.dicebear.com/10.x/adventurer/svg?seed=${encodeURIComponent(player1.id)}&size=30&earringsProbability=30`);
 
     Vitest.expect(playerCards.querySelector("ons-card ons-list-header div.right[data-property='name']")?.textContent?.trim()).toBe(player1.name);
     Object.entries(player1).forEach(([property, value]) => {
@@ -39,7 +40,8 @@ Vitest.test('renderPlayerCards should render player cards correctly', () => {
 Vitest.test('renderPlayerCards should log error if playerCards container is not found', () => {
     const consoleErrorSpy = Vitest.vi.spyOn(console, 'error').mockImplementation(() => { });
     try {
-        playerView.renderPlayerCards("htmlId", []);
+
+        playerView.renderPlayerCardsByName(document.firstElementChild as HTMLElement, "htmlId", []);
     } catch (error: Error | any) {
         Vitest.expect(error.message).contains("required value was not found");
     }

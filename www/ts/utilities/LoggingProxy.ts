@@ -5,6 +5,10 @@ export default function loggingProxy<T extends object>(target: T): T {
 
     return new Proxy(target, {
         get(obj, property, receiver) {
+            if (property === "constructor") {
+                return Reflect.get(obj, property, receiver);
+            }
+
             const value = Reflect.get(obj, property, receiver);
 
             if (typeof value !== "function") {

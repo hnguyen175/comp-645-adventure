@@ -16,6 +16,12 @@ import drunkenTavernHtml from '../www/views/drunken-tavern.html?raw';
 import forestHtml from '../www/views/forest.html?raw';
 import currentGameState from '../www/ts/GameState';
 import AllPlayersList from '../www/ts/rendering/AllPlayersList';
+import DrunkenTavern from '../www/ts/carousel-items/DrunkenTavern';
+import lakeHtml from '../www//views/lake.html?raw';
+import bridgeHtml from '../www/views/bridge.html?raw';
+import mountainHtml from '../www/views/mountain.html?raw';
+import must from '../www/ts/utilities/RequiredField';
+import CarouselItem from '../www/ts/carousel-items/CarouselItem';
 
 const toastMock = Vitest.vi.fn().mockResolvedValue(undefined);
 
@@ -94,6 +100,15 @@ Vitest.beforeEach(async () => {
         }
         if (url === "../views/forest.html") {
             return new Response(forestHtml);
+        }
+        if (url === "../views/lake.html") {
+            return new Response(lakeHtml);
+        }
+        if (url === "../views/bridge.html") {
+            return new Response(bridgeHtml);
+        }
+        if (url === "../views/mountain.html") {
+            return new Response(mountainHtml);
         }
 
         throw new Error(`Unexpected fetch URL: ${url}`);
@@ -216,29 +231,6 @@ Vitest.test("onCarouselPriorDisplayingItem prior displaying Welcome", async () =
 
     Vitest.expect(playerService.savePlayers).not.toHaveBeenCalled();
     Vitest.expect(consoleErrorSpy).not.toHaveBeenCalled();
-});
-
-Vitest.test("onCarouselPriorDisplayingItem prior displaying drunken tavern", async () => {
-    navController.loadCarouselItem([navController.welcome, navController.drunkenTavern]);
-    const carousel = document.getElementById("carouselNewGame") as unknown as HTMLElement;
-
-    const event = new Event('prechange');
-    Object.assign(event, {
-        carousel,
-        activeIndex: 1,
-    });
-
-    const mockPlayers = new Party();
-    const playerServiceSpy = Vitest.vi.spyOn(currentGameState, 'getPlayers').mockImplementation(() => {
-        return mockPlayers;
-    });
-    const renderPlayerCardsSpy = Vitest.vi.spyOn(playerView, 'renderPlayerCards')
-        .mockImplementationOnce((carouselId: string, players: Player[]) => {
-            Vitest.expect(carouselId).toBe("caiDrunkenTavern");
-            Vitest.expect(players).toBe(mockPlayers.players);
-        });
-
-    await navController.onCarouselPriorDisplayingItem(event);
 });
 
 Vitest.test("onCarouselPriorDisplayingItem prior displaying load game", async () => {
@@ -453,7 +445,7 @@ Vitest.test("loadCarouselItems removes all carousel items except welcome", async
 
     const items = carousel.querySelectorAll("ons-carousel-item");
     Vitest.expect(items.length).toBe(4); // welcome + 2 new items
-    Vitest.expect(fetch).toHaveBeenCalledTimes(6);
+    Vitest.expect(fetch).toHaveBeenCalledTimes(4);
 });
 
 Vitest.test("onLoadGameButtonClick loads players and navigates to next carousel item", async () => {
@@ -533,7 +525,10 @@ Vitest.test("resetCarouselToLoadGame with LoadGame item already present navigate
     Vitest.expect(carousel.setActiveIndex).toHaveBeenCalledWith(1);
 });
 
-Vitest.test("onCarouselPostDisplayingItem with drunken tavern item triggers renderPlayerCards for villain", () => {
+Vitest.test("onCarouselPostDisplayingItem with drunken tavern item triggers renderPlayerCards for villain", async () => {
+    const drunkenTavern = await DrunkenTavern.create(navController, playerService, navController.templateGameTask);
+    navController.drunkenTavern = drunkenTavern;
+
     navController.loadCarouselItem([navController.welcome, navController.comrades, navController.drunkenTavern]);
     Vitest.expect(document.getElementById(navController.drunkenTavern.carouselItem.id)).not.toBeNull();
     Vitest.expect(document.getElementById(navController.comrades.carouselItem.id)).not.toBeNull();
@@ -554,3 +549,51 @@ Vitest.test("onCarouselPostDisplayingItem with drunken tavern item triggers rend
     Vitest.expect(document.getElementById(navController.welcome.carouselItem.id)).not.toBeNull();
 });
 
+Vitest.test.each([
+    ["DrunkenTavern", ["FangornForest"]],
+    ["FangornForest", ["Lake", "Bridge", "Mountain"]],
+    ["Lake", []],
+    ["Bridge", []],
+    ["Mountain", []],
+] as const)("onGameStart for %s", async (screenName, nextScreens) => {
+    // Vitest.test("onGameStart for DrunkenTavern", async () => {
+    Vitest.vi.spyOn(currentGameState, 'getPlayers').mockImplementation(() => {
+        const party = new Party();
+        party.currentScreen = screenName;
+        party.players = [Player.getDefaultPlayer()];
+        return party;
+    });
+    let nextCarouselItem: any = null;
+    Vitest.vi.spyOn(navController, 'addCarouselItem').mockImplementation(async (carouselItem: any) => {
+        Vitest.expect(carouselItem.constructor.name).toBe(screenName);
+        nextCarouselItem = carouselItem;
+    });
+
+    await navController.onGameStart();
+
+    Vitest.expect(navController.addCarouselItem).toHaveBeenCalledOnce();
+    Vitest.expect(carousel.next).toHaveBeenCalledOnce();
+
+    await navController.createNextChallenge(nextCarouselItem).then((newCarouselItem: CarouselItem) => {
+        Vitest.expect(nextScreens.some(screen => newCarouselItem.constructor.name === screen)).toBe(true);
+    }).catch((error) => {
+        Vitest.expect(nextScreens.length).toBe(0);
+    });
+});
+
+Vitest.test("onGameStart with unknown screen throws an error", async () => {
+    Vitest.vi.spyOn(currentGameState, 'getPlayers').mockImplementation(() => {
+        const party = new Party();
+        party.currentScreen = "UnknownScreen";
+        party.players = [Player.getDefaultPlayer()];
+        return party;
+    });
+
+    Vitest.vi.spyOn(console, 'error').mockImplementation(() => { });
+    await navController.onGameStart();
+
+    Vitest.expect(console.error).toHaveBeenCalledWith("Unknown currentScreen: UnknownScreen");
+});
+
+// Vitest.test("createNextChallenge creates a new carousel item based on the current screen", async () => {
+//     Vitest.vi.spyOn(navController,)

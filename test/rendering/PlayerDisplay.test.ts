@@ -5,35 +5,35 @@ import must from '../../www/ts/utilities/RequiredField.ts';
 
 Vitest.describe('createPlayerCard for regular players, and mysterious players', () => {
     Vitest.test.each([
-        [true,
-            [
-                "HP: 100",
-                "STR: 50",
-                "SPD: 30",
-                "MP: 20",
-                "LUK: 10",
-                "WEP: Sword",
-                "CLS: Warrior"
-            ],
-            [
-                "duh: whatsthis"
-            ]
+        [["hp", "str", "spd", "mp", "luk", "wep", "cls"],
+        [
+            "HP: 100",
+            "STR: 50",
+            "SPD: 30",
+            "MP: 20",
+            "LUK: 10",
+            "WEP: Sword",
+            "CLS: Warrior"
         ],
-        [false,
-            [
-                "WEP: Sword",
-                "CLS: Warrior"
-            ],
-            [
-                "HP: 100",
-                "STR: 50",
-                "SPD: 30",
-                "MP: 20",
-                "LUK: 10",
-                "duh: whatsthis"
-            ]
+        [
+            "duh: whatsthis"
         ]
-    ] as const)("createPlayerCard should return a string containing the player name and stats when showStrength is %s", (showStrength, present, absent) => {
+        ],
+        [["wep", "cls"],
+        [
+            "WEP: Sword",
+            "CLS: Warrior"
+        ],
+        [
+            "HP: 100",
+            "STR: 50",
+            "SPD: 30",
+            "MP: 20",
+            "LUK: 10",
+            "duh: whatsthis"
+        ]
+        ]
+    ] as const)("createPlayerCard should return a string containing the player name and stats when showStrength is %s", (rows, present, absent) => {
 
         // Vitest.test('createPlayerCard should return a string containing the player name and stats', () => {
         const player = new Player('John Doe', 'john.doe@example.com');
@@ -45,7 +45,7 @@ Vitest.describe('createPlayerCard for regular players, and mysterious players', 
         player.wep = 'Sword';
         player.cls = 'Warrior';
 
-        const playerCardHtml = createPlayerCard(player, showStrength);
+        const playerCardHtml = createPlayerCard(player, rows as unknown as string[]);
 
         const container = document.createElement('div');
         container.innerHTML = playerCardHtml;

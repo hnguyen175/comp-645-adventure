@@ -6,14 +6,14 @@ Vitest.test("ShuffleBag should return a random item from the provided array", ()
     const picker = new ShuffleBag(items);
     let pickedItems: number[] = [];
     for (let i = 0; i < items.length; i++) {
-        const randomItem = picker.getRandomItem();
+        const randomItem = picker.draw();
         pickedItems.push(randomItem);
     }
 
     Vitest.expect(items.every(item => pickedItems.includes(item))).toBe(true);
 
     // able to pick more items than the original array length, and it should still return items from the original array
-    Vitest.expect(items.includes(picker.getRandomItem())).toBe(true);
+    Vitest.expect(items.includes(picker.draw())).toBe(true);
 });
 
 Vitest.test("ShuffleBag should not return the same item consecutively when there are at least 2 unique items", () => {
@@ -21,7 +21,7 @@ Vitest.test("ShuffleBag should not return the same item consecutively when there
     const picker = new ShuffleBag(items);
     let lastPickedItem: number | null = null;
     for (let i = 0; i < 10; i++) {
-        const randomItem = picker.getRandomItem();
+        const randomItem = picker.draw();
         Vitest.expect(randomItem).not.toBe(lastPickedItem);
         lastPickedItem = randomItem;
     }

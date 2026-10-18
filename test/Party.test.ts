@@ -27,6 +27,7 @@ Vitest.test("addDefaultPlayers adds two default players to the players array", (
 
 Vitest.test("savePlayersToStorage saves players to storage", () => {
     const players = new Players();
+    players.addGold(100);
     const player1 = Player.getDefaultPlayer();
     const player2 = Player.getDefaultPlayer();
     players.addPlayer(player1);
@@ -38,6 +39,8 @@ Vitest.test("savePlayersToStorage saves players to storage", () => {
     Vitest.expect(savedPlayers!.players.length).toBe(2);
     Vitest.expect(savedPlayers!.players[0]).toEqual(player1);
     Vitest.expect(savedPlayers!.players[1]).toEqual(player2);
+    Vitest.expect(savedPlayers!.earnedGold).toBe(100);
+    Vitest.expect(savedPlayers!.currentScreen).toBe('DrunkenTavern');
 });
 
 Vitest.test("loadPlayersFromStorage loads players from storage", () => {
@@ -71,10 +74,10 @@ Vitest.test("randomPlayerPicker returns a player from the players array", () => 
     players.addPlayer(player1);
     players.addPlayer(player2);
 
-    const pickedPlayer1 = players.randomPlayerPicker();
-    const pickedPlayer2 = players.randomPlayerPicker();
+    const pickedPlayer1 = players.draw();
+    const pickedPlayer2 = players.draw();
 
     Vitest.expect(pickedPlayer1).not.toBe(pickedPlayer2); // They may be equal, but it's unlikely
-    Vitest.expect(players.players).toContain(players.randomPlayerPicker());
-    Vitest.expect(players.players).toContain(players.randomPlayerPicker());
+    Vitest.expect(players.players).toContain(players.draw());
+    Vitest.expect(players.players).toContain(players.draw());
 });

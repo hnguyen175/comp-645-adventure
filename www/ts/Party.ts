@@ -7,6 +7,7 @@ export default class Party {
     currentScreen: string = "DrunkenTavern";
     questCompleted: boolean = false;
     players: Player[];
+    private _earnedGold: number = 0;
     private _shuffleBag: ShuffleBag<number> | null = null;
 
     constructor() {
@@ -32,7 +33,8 @@ export default class Party {
         return {
             currentScreen: this.currentScreen,
             questCompleted: this.questCompleted,
-            players: this.players
+            players: this.players,
+            earnedGold: this._earnedGold
         };
     }
 
@@ -57,7 +59,7 @@ export default class Party {
     }
 
     // does not handle the case where new players are added after the shuffle bag is created. In that case, the shuffle bag will need to be reset.
-    randomPlayerPicker(): Player {
+    draw(): Player {
         must(this.players.length > 0, "No players available to pick from.");
 
         if (!this._shuffleBag) {
@@ -66,5 +68,18 @@ export default class Party {
         }
         const randomIndex = this._shuffleBag.draw();
         return this.players[randomIndex];
+    }
+
+    get earnedGold(): number {
+        return this._earnedGold;
+    }
+
+    set earnedGold(value: number) {
+        this._earnedGold = value;
+    }
+
+    addGold(value: number): number {
+        this._earnedGold += value;
+        return this._earnedGold;
     }
 };
