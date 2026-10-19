@@ -19,16 +19,18 @@ let playerService: PlayerService = null as unknown as PlayerService;
 let mockGameStateGetPlayers: MockInstance<typeof currentGameState['getPlayers']>;
 let mockGameStateGetDktVillain: MockInstance<typeof currentGameState['getDtkVillain']>;
 let templateFragmentMock: unknown;
-let navControllerMock = {
-    createNextChallenge: Vitest.vi.fn().mockImplementation(async (carouselItem) => {
-        const element = document.createElement('div');
-        return element as HTMLElement;
-    })
-} as unknown as NavController;
+let navControllerMock: any;
 
 Vitest.beforeAll(async () => {
-    Vitest.vi.resetAllMocks();
 
+    navControllerMock = {
+        createNextChallenge: Vitest.vi.fn().mockImplementation(async (carouselItem) => {
+            const mockForest = {
+                constructor: { name: "FangornForest" }
+            }
+            return mockForest;
+        })
+    };
 
     // Mock the fetch function to return the HTML content for the specified URLs
     Vitest.vi.spyOn(globalThis, 'fetch').mockImplementation(async (url) => {
@@ -188,6 +190,23 @@ Vitest.test.each([
     Vitest.expect(must(dkt.carouselItem.querySelector("#btnSTR")).hasAttribute("disabled")).toBe(true);
     Vitest.expect(dkt.carouselItem.querySelector<HTMLButtonElement>("#btnSPD")?.hasAttribute("disabled")).toBe(true);
     Vitest.expect(dkt.carouselItem.querySelector<HTMLButtonElement>("#btnMP")?.hasAttribute("disabled")).toBe(true);
+
+    if (setupScenario.toString().includes("winWithLuck") || setupScenario.toString().includes("win")) {
+        const replaceWith = Vitest.vi.spyOn(dkt.carouselItem, 'replaceWith').mockImplementation(() => Vitest.vi.fn());
+
+        const nextChallenge = await Vitest.vi.waitFor(() => {
+            const btn = dkt.carouselItem.querySelector<HTMLButtonElement>("ons-button.challenge-button");
+
+            Vitest.expect(btn).not.toBeNull();
+            return btn;
+        });
+
+        if (nextChallenge) {
+            nextChallenge.dispatchEvent(new Event("click"));
+
+            Vitest.expect(replaceWith).toHaveBeenCalled();
+        }
+    }
 });
 
 Vitest.test('Tie scenario user can try their luk 3 times', async () => {

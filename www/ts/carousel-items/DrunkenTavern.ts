@@ -58,12 +58,12 @@ export default class DrunkenTavern extends CarouselItem {
         const carouselItem = must(this.carouselItem);
         const carouselItemId = must(carouselItem.id);
 
-        carouselItem.addEventListener("click", (event) => {
+        carouselItem.addEventListener("click", async (event) => {
             const clickedElement = event.target as HTMLElement;
             if (clickedElement.closest(`#${carouselItemId} :is(#btnSTR, #btnSPD, #btnMP)`)) {
                 event.preventDefault();
                 const btnTxt = must(clickedElement.textContent);
-                fireAndForget(this.drunkenTavernChallenge(btnTxt.trim().toLowerCase() as ChallengeStat));
+                await this.drunkenTavernChallenge(btnTxt.trim().toLowerCase() as ChallengeStat);
                 // await this.drunkenTavernChallenge(btnTxt.trim().toLowerCase() as ChallengeStat);
                 return;
             }
@@ -201,7 +201,7 @@ export default class DrunkenTavern extends CarouselItem {
         const nextChallenge = await this.navController.createNextChallenge(this);
         this.nextChallenge(nextChallenge.constructor.name);
 
-        const btnGoToForest = ons.createElement(`<ons-button class="challenge-button">${nextChallenge.constructor.name}</ons-button>`) as HTMLElement;
+        const btnGoToForest = await ons.createElement(`<ons-button class="challenge-button">${nextChallenge.constructor.name}</ons-button>`) as HTMLElement;
 
         btnGoToForest.addEventListener("click", () => {
             this.carouselItem.replaceWith(nextChallenge.carouselItem);
