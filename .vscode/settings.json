@@ -10,6 +10,10 @@
     "vim.useSystemClipboard": true,
     "vim.useCtrlKeys": false,
     "vim.hlsearch": true,
+    "vim.handleKeys": {
+        "<C-o>": true,
+        "<C-i>": true,
+    },
     // To improve performance
     "extensions.experimental.affinity": {
         "vscodevim.vim": 1
@@ -25,9 +29,19 @@
         "editor.defaultFormatter": "vscode.html-language-features"
     },
     "[typescript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
     },
     "editor.formatOnSave": true,
+    "editor.formatOnType": false,
     "editor.formatOnPaste": true,
     "remote.autoForwardPortsSource": "hybrid",
+    "eslint.run": "onSave",
+    "eslint.validate": [
+        "typescript",
+        "typescriptreact",
+        "javascript",
+        "javascriptreact"
+    ],
+    "vs-code-prettier-eslint.prettierLast": false,
+    "vs-code-prettier-eslint.prettierESLintIntegration": true,
 }

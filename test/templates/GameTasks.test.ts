@@ -1,7 +1,7 @@
 import * as Vitest from 'vitest';
 import must from '../../www/ts/utilities/RequiredField';
 import NavController from '../../www/ts/NavController';
-import TemplateGameTasks from '../../www/ts/templates/TemplateGameTasks';
+import GameTasks from '../../www/ts/templates/GameTasks';
 
 let navControllerMock: any;
 Vitest.beforeAll(() => {
@@ -18,7 +18,7 @@ Vitest.beforeEach(() => {
 Vitest.test('TemplateGameTask should be properly initialized', async () => {
     document.body.innerHTML = /*html*/ `
         <html>
-            <template id="templ8GameTasks">
+            <template id="templGameTasks">
                 <div class="game-tasks">
                     <h3>Game Task</h3>
                     <p>This is a game task.</p>
@@ -26,7 +26,7 @@ Vitest.test('TemplateGameTask should be properly initialized', async () => {
             </template>
         </html>`;
 
-    const templateGameTasks = new TemplateGameTasks(navControllerMock as NavController);
+    const templateGameTasks = new GameTasks(navControllerMock as NavController);
     Vitest.expect(templateGameTasks).not.toBeNull();
     Vitest.expect(templateGameTasks.templateFragment).not.toBeNull();
 });
@@ -34,7 +34,7 @@ Vitest.test('TemplateGameTask should be properly initialized', async () => {
 Vitest.test('TemplateGameTask should not call resetCarouselToWelcome for non-quit actions', async () => {
     document.body.innerHTML = /*html*/ `
         <html>
-            <template id="templ8GameTasks">
+            <template id="templGameTasks">
                 <div class="game-tasks">
                     <h3>Game Task</h3>
                     <p>This is a game task.</p>
@@ -43,7 +43,7 @@ Vitest.test('TemplateGameTask should not call resetCarouselToWelcome for non-qui
             </template>
         </html>`;
 
-    const templateGameTasks = new TemplateGameTasks(navControllerMock as NavController);
+    const templateGameTasks = new GameTasks(navControllerMock as NavController);
     Vitest.expect(templateGameTasks).not.toBeNull();
     Vitest.expect(templateGameTasks.templateFragment).not.toBeNull();
 
@@ -61,7 +61,7 @@ Vitest.test('TemplateGameTask should not call resetCarouselToWelcome for non-qui
 Vitest.test('TemplateGameTask should handle click events on game task links', async () => {
     document.body.innerHTML = /*html*/ `
         <html>
-            <template id="templ8GameTasks">
+            <template id="templGameTasks">
                 <div class="game-tasks">
                     <h3>Game Task</h3>
                     <p>This is a game task.</p>
@@ -71,7 +71,7 @@ Vitest.test('TemplateGameTask should handle click events on game task links', as
             </template>
         </html>`;
 
-    const templateGameTasks = new TemplateGameTasks(navControllerMock as NavController);
+    const templateGameTasks = new GameTasks(navControllerMock as NavController);
     Vitest.expect(templateGameTasks).not.toBeNull();
     Vitest.expect(templateGameTasks.templateFragment).not.toBeNull();
 

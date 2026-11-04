@@ -1,6 +1,6 @@
 import * as Vitest from 'vitest';
 
-import Players from '../www/ts/Party';
+import Party from '../www/ts/Party';
 import Player from '../www/ts/Player';
 import PlayerService from '../www/ts/PlayerService';
 
@@ -11,73 +11,73 @@ Vitest.beforeEach(() => {
 });
 
 Vitest.test("addPlayer adds a player to the players array", () => {
-    const players = new Players();
-    const player = Player.getDefaultPlayer();
-    players.addPlayer(player);
-    Vitest.expect(players.players.length).toBe(1);
-    Vitest.expect(players.players[0]).toEqual(player);
-    Vitest.expect(players.toString()).toBe(`Players: ${player.toString()}`);
+    const party = new Party();
+    const player = new Player();
+    party.addPlayer(player);
+    Vitest.expect(party.players.length).toBe(1);
+    Vitest.expect(party.players[0]).toEqual(player);
+    Vitest.expect(party.toString()).toBe(`Players: ${player.toString()}`);
 });
 
 Vitest.test("addDefaultPlayers adds two default players to the players array", () => {
-    const players = new Players();
-    players.addDefaultPlayers();
-    Vitest.expect(players.players.length).toBe(2);
+    const party = new Party();
+    party.addDefaultPlayers();
+    Vitest.expect(party.players.length).toBe(2);
 });
 
 Vitest.test("savePlayersToStorage saves players to storage", () => {
-    const players = new Players();
-    players.addGold(100);
-    const player1 = Player.getDefaultPlayer();
-    const player2 = Player.getDefaultPlayer();
-    players.addPlayer(player1);
-    players.addPlayer(player2);
-    players.savePlayersToStorage();
+    const party = new Party();
+    party.addGold(100);
+    const player1 = new Player();
+    const player2 = new Player();
+    party.addPlayer(player1);
+    party.addPlayer(player2);
+    party.savePlayersToStorage();
     // const savedPlayers = localStorage.getItem("players");
-    const savedPlayers = playerService.loadPlayers(player1.email);
-    Vitest.expect(savedPlayers).not.toBeNull();
-    Vitest.expect(savedPlayers!.players.length).toBe(2);
-    Vitest.expect(savedPlayers!.players[0]).toEqual(player1);
-    Vitest.expect(savedPlayers!.players[1]).toEqual(player2);
-    Vitest.expect(savedPlayers!.earnedGold).toBe(100);
-    Vitest.expect(savedPlayers!.currentScreen).toBe('DrunkenTavern');
+    const savedParty = playerService.loadParty(player1.email);
+    Vitest.expect(savedParty).not.toBeNull();
+    Vitest.expect(savedParty!.players.length).toBe(2);
+    Vitest.expect(savedParty!.players[0]).toEqual(player1);
+    Vitest.expect(savedParty!.players[1]).toEqual(player2);
+    Vitest.expect(savedParty!.earnedGold).toBe(100);
+    Vitest.expect(savedParty!.currentScreen).toBe('DrunkenTavern');
 });
 
 Vitest.test("loadPlayersFromStorage loads players from storage", () => {
-    const players = new Players();
-    const player1 = Player.getDefaultPlayer();
-    const player2 = Player.getDefaultPlayer();
-    players.addPlayer(player1);
-    players.addPlayer(player2);
-    players.savePlayersToStorage();
-    const newPlayers = playerService.loadPlayers(player1.email) as Players;
-    Vitest.expect(newPlayers.players.length).toBe(2);
-    Vitest.expect(newPlayers.players[0]).toEqual(player1);
-    Vitest.expect(newPlayers.players[1]).toEqual(player2);
+    const party = new Party();
+    const player1 = new Player();
+    const player2 = new Player();
+    party.addPlayer(player1);
+    party.addPlayer(player2);
+    party.savePlayersToStorage();
+    const savedParty = playerService.loadParty(player1.email) as Party;
+    Vitest.expect(savedParty.players.length).toBe(2);
+    Vitest.expect(savedParty.players[0]).toEqual(player1);
+    Vitest.expect(savedParty.players[1]).toEqual(player2);
 });
 
 Vitest.test("loadPlayersFromStorage does not throw error when no players are saved", () => {
-    Vitest.expect(() => playerService.loadPlayers("nonexistent@example.com")).not.toThrow();
-    const players = playerService.loadPlayers("nonexistent@example.com");
+    Vitest.expect(() => playerService.loadParty("nonexistent@example.com")).not.toThrow();
+    const players = playerService.loadParty("nonexistent@example.com");
     Vitest.expect(players).toBeNull();
 });
 
 Vitest.test("loadPlayersFromStorage from invalid JSON does not throw error", () => {
     localStorage.setItem("nonexistent@example.com", "[]");
-    Vitest.expect(() => Players.loadPlayersFromStorage("nonexistent@example.com")).not.toThrow();
+    Vitest.expect(() => Party.loadPlayersFromStorage("nonexistent@example.com")).not.toThrow();
 });
 
 Vitest.test("randomPlayerPicker returns a player from the players array", () => {
-    const players = new Players();
-    const player1 = Player.getDefaultPlayer();
-    const player2 = Player.getDefaultPlayer();
-    players.addPlayer(player1);
-    players.addPlayer(player2);
+    const party = new Party();
+    const player1 = new Player();
+    const player2 = new Player();
+    party.addPlayer(player1);
+    party.addPlayer(player2);
 
-    const pickedPlayer1 = players.draw();
-    const pickedPlayer2 = players.draw();
+    const pickedPlayer1 = party.draw();
+    const pickedPlayer2 = party.draw();
 
     Vitest.expect(pickedPlayer1).not.toBe(pickedPlayer2); // They may be equal, but it's unlikely
-    Vitest.expect(players.players).toContain(players.draw());
-    Vitest.expect(players.players).toContain(players.draw());
+    Vitest.expect(party.players).toContain(party.draw());
+    Vitest.expect(party.players).toContain(party.draw());
 });

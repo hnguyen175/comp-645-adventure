@@ -2,18 +2,19 @@ import * as Vitest from 'vitest';
 import createPlayerCard from '../../www/ts/rendering/PlayerDisplay.ts';
 import Player from '../../www/ts/Player.ts';
 import must from '../../www/ts/utilities/RequiredField.ts';
+import { playerStatsIconMap } from '../../www/ts/rendering/PlayerDisplay.ts';
 
 Vitest.describe('createPlayerCard for regular players, and mysterious players', () => {
     Vitest.test.each([
         [["hp", "str", "spd", "mp", "luk", "wep", "cls"],
         [
-            "HP: 100",
-            "STR: 50",
-            "SPD: 30",
-            "MP: 20",
-            "LUK: 10",
-            "WEP: Sword",
-            "CLS: Warrior"
+            `${playerStatsIconMap.get("hp")}100`,
+            `${playerStatsIconMap.get("str")}50`,
+            `${playerStatsIconMap.get("spd")}30`,
+            `${playerStatsIconMap.get("mp")}20`,
+            `${playerStatsIconMap.get("luk")}10`,
+            `${playerStatsIconMap.get("wep")}Sword`,
+            `${playerStatsIconMap.get("cls")}Warrior`
         ],
         [
             "duh: whatsthis"
@@ -21,21 +22,20 @@ Vitest.describe('createPlayerCard for regular players, and mysterious players', 
         ],
         [["wep", "cls"],
         [
-            "WEP: Sword",
-            "CLS: Warrior"
+            `${playerStatsIconMap.get("wep")}Sword`,
+            `${playerStatsIconMap.get("cls")}Warrior`
         ],
         [
-            "HP: 100",
-            "STR: 50",
-            "SPD: 30",
-            "MP: 20",
-            "LUK: 10",
+            `${playerStatsIconMap.get("hp")}100`,
+            `${playerStatsIconMap.get("str")}50`,
+            `${playerStatsIconMap.get("spd")}30`,
+            `${playerStatsIconMap.get("mp")}20`,
+            `${playerStatsIconMap.get("luk")}10`,
             "duh: whatsthis"
         ]
         ]
     ] as const)("createPlayerCard should return a string containing the player name and stats when showStrength is %s", (rows, present, absent) => {
 
-        // Vitest.test('createPlayerCard should return a string containing the player name and stats', () => {
         const player = new Player('John Doe', 'john.doe@example.com');
         player.hp = 100;
         player.str = 50;

@@ -1,6 +1,6 @@
 import * as Vitest from 'vitest';
 
-Vitest.beforeEach( async () => {
+Vitest.beforeEach(async () => {
     localStorage.clear();
     Vitest.vi.resetModules();
 });
@@ -13,14 +13,14 @@ Vitest.test("savePlayers saves/deletes a player to/form storage", async () => {
     const email = "john.doe@somewhere.com";
     playerService.savePlayers(name, email);
 
-    const savedPlayers = playerService.loadPlayers(email);
+    const savedPlayers = playerService.loadParty(email);
 
     Vitest.expect(savedPlayers).not.toBeNull();
     Vitest.expect(savedPlayers?.players[0]?.name).toBe(name);
     Vitest.expect(savedPlayers?.players[0]?.email).toBe(email);
 
     playerService.deletePlayers(email);
-    Vitest.expect(playerService.loadPlayers(email)).toBeNull();
+    Vitest.expect(playerService.loadParty(email)).toBeNull();
 });
 
 Vitest.test("listPlayersFromStorage returns all saved players", async () => {
@@ -28,7 +28,7 @@ Vitest.test("listPlayersFromStorage returns all saved players", async () => {
     const playerService = new module.default();
 
     playerService.savePlayers("Alice", "alice@wonderland.com");
-    const playerList = playerService.listPlayersFromStorage();
+    const playerList = playerService.listPartyFromStorage();
     Vitest.expect(playerList).toHaveLength(1);
     Vitest.expect(playerList[0]).toBe("alice@wonderland.com");
 });

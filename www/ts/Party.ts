@@ -19,8 +19,8 @@ export default class Party {
     }
 
     addDefaultPlayers() {
-        this.players.push(Player.getDefaultPlayer());
-        this.players.push(Player.getDefaultPlayer());
+        this.players.push(new Player());
+        this.players.push(new Player());
     }
 
     savePlayersToStorage() {
@@ -47,11 +47,11 @@ export default class Party {
     }
 
     private static fromJSON(data: Partial<Party>): Party {
-        const players = Object.assign(new Party(), data);
+        const party = Object.assign(new Party(), data);
 
-        players.players = data.players?.map(
-            playerData => Player.fromJSON(playerData)) || [];
-        return players;
+        party.players = data.players?.map(
+            playerData => Player.fromJSON(JSON.parse(JSON.stringify(playerData)))) || [];
+        return party;
     }
 
     toString(): string {

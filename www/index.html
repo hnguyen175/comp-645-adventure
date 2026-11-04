@@ -12,7 +12,6 @@
   <script src="lib/onsenui/js/onsenui.min.js"></script>
   <script src="js/show-ip-button.js" defer></script>
   <script type="module" src="js/App.js"></script>
-  <script type="module" src="js/Utilities/FangornForest.js"></script>
 
   <link rel="stylesheet" href="components/loader.css">
   <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
@@ -38,12 +37,22 @@
   <ons-carousel id="carouselNewGame" swipeable auto-scroll fullscreen auto-refresh>
   </ons-carousel>
 
-  <template id="templ8GameTasks">
+  <template id="templGameTasks">
     <h4 style="text-align: center;" class="game-tasks">
       <a href="#" data-gametsk="save">Save Game</a> | <a href="#" data-gametsk="load">Load Game</a> | <a href="#"
         data-gametsk="quit">Quit Game</a> | <a href=" #" data-gametsk="settings">Settings</a>
     </h4>
   </template>
+
+  <template id="templGoToNextChallenge">
+    <div style="text-align: center; margin-top: 20px;" class="next-challenge">
+      <p>Congratulations! You have completed the current challenge.</p>
+      <p>Prepare for the next adventure!</p>
+      <ons-button class="button next-challenge-button">Next Challenge</ons-button>
+      <p></p>
+    </div>
+  </template>
+
 </body>
 
 </html>

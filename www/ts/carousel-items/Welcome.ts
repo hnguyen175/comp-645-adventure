@@ -39,7 +39,7 @@ export default class Welcome extends CarouselItem {
     async updateLoadGameButtonState(): Promise<void> {
         const carouselItem = this.carouselItem;
         const reloadButton = must(carouselItem.querySelector<HTMLElement>("#btnReload"));
-        const players = await this.playerService.listPlayersFromStorage();
+        const players = await this.playerService.listPartyFromStorage();
         if (!players || players.length === 0) {
             reloadButton.setAttribute("disabled", "true");
         } else {

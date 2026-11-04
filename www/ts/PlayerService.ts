@@ -1,4 +1,4 @@
-import Player from './Player.ts';
+import Player from "./Player.ts";
 import Party from './Party.ts';
 import playerRegistry from './PlayerRegistry.ts';
 import currentGameState from "./GameState.ts";
@@ -11,7 +11,7 @@ type PlayerInfoResult = {
 
 export default class PlayerService {
     savePlayers(name: string, email: string): void {
-        const player = Player.createRandomPlayer(name, email);
+        const player = new Player(name, email);
 
         const players = new Party();
         players.addPlayer(player);
@@ -21,13 +21,13 @@ export default class PlayerService {
 
         playerRegistry.addEmail(email);
 
-        currentGameState.setPlayers(players);
+        currentGameState.setParty(players);
     }
 
-    loadPlayers(email: string): Party | null {
+    loadParty(email: string): Party | null {
         const current = Party.loadPlayersFromStorage(email);
         if (current !== null) {
-            currentGameState.setPlayers(current);
+            currentGameState.setParty(current);
         }
         return current;
     }
@@ -51,7 +51,7 @@ export default class PlayerService {
         return errorMessage;
     }
 
-    listPlayersFromStorage(): string[] {
+    listPartyFromStorage(): string[] {
         return playerRegistry.getEmails();
     }
 
@@ -62,12 +62,11 @@ export default class PlayerService {
 
     createVillain(): Player {
         const villain = Player.getVillainPlayer();
-        currentGameState.setDtkVillain(villain);
         return villain;
     }
 
-    static saveActivePlayers(): void {
-        const players = must(currentGameState.getPlayers());
-        players.savePlayersToStorage();
+    static saveActiveParty(): void {
+        const party = must(currentGameState.getParty());
+        party.savePlayersToStorage();
     }
 }

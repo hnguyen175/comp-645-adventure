@@ -3,18 +3,18 @@ import must from "../utilities/RequiredField.ts";
 import currentGameState from "../GameState.ts";
 
 export default class AllPlayersList {
-    static renderAllPlayersList(playerListElement: HTMLElement, playerService: PlayerService): void {
+    static renderSavedGameList(playerListElement: HTMLElement, playerService: PlayerService): void {
         // Remove old player options, but keep the first placeholder option
         while (playerListElement.children.length > 1) {
             playerListElement.removeChild(playerListElement.lastElementChild!);
         }
 
-        const currentPlayerEmail = currentGameState.getPlayers()?.players[0]?.email;
+        const currentPlayerEmail = currentGameState.getParty()?.players[0]?.email;
         // let selectedItem: HTMLElement | null = null;
         let selectedItem: HTMLElement | undefined;
 
-        must(playerService.listPlayersFromStorage()).forEach(playerEmail => {
-            const player = playerService.loadPlayers(playerEmail);
+        must(playerService.listPartyFromStorage()).forEach(playerEmail => {
+            const player = playerService.loadParty(playerEmail);
             if (!player) {
                 console.error(`Player with email ${playerEmail} not found.`);
                 return;

@@ -20,7 +20,6 @@ export default class ShuffleBag<T> {
         return shuffled;
     }
 
-
     // Guarantees no consecutive duplicate picks
     // when originalItems contains at least 2 unique items.
     public draw(): T {
@@ -39,5 +38,9 @@ export default class ShuffleBag<T> {
         this.lastPickedItem = pickedItem;
 
         return pickedItem;
+    }
+
+    public contains(item: unknown): boolean {
+        return this.originalItems.includes(item as T);
     }
 }

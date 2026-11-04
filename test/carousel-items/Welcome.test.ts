@@ -29,7 +29,7 @@ Vitest.beforeAll(async () => {
     });
 
     playerServiceMock = {
-        listPlayersFromStorage: Vitest.vi.fn(() => ["a", "b", "c"]),
+        listPartyFromStorage: Vitest.vi.fn(() => ["a", "b", "c"]),
     }
 });
 
@@ -59,7 +59,7 @@ Vitest.test("Welcome should be properly initialized", async () => {
 
 Vitest.test("Welcome should disable reload button when no players in storage", async () => {
     // Mock the playerService to return an empty list of players
-    playerServiceMock.listPlayersFromStorage = Vitest.vi.fn(() => []);
+    playerServiceMock.listPartyFromStorage = Vitest.vi.fn(() => []);
     const welcome = await Welcome.create(navControllerMock, playerServiceMock);
 
     //setup

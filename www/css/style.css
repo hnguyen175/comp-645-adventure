@@ -28,7 +28,7 @@ ons-carousel ons-card.card {
 }
 
 .player-stat .list-item__center {
-    font-size: 14px;
+    font-size: 12px;
     min-height: 0;
     padding: 0;
 }
@@ -45,7 +45,7 @@ ons-carousel-item h4 {
 ons-list-header.list-header {
     font-family: system-ui, sans-serif;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 12px;
     padding: 0 10px;
 }
 

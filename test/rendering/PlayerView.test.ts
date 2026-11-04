@@ -2,6 +2,7 @@ import * as Vitest from 'vitest';
 import PlayerView from '../../www/ts/rendering/PlayerView';
 import Players from '../../www/ts/Party';
 import Player from '../../www/ts/Player';
+import { playerStatsIconMap } from '../../www/ts/rendering/PlayerDisplay';
 
 let playerView: PlayerView = null as unknown as PlayerView;
 Vitest.beforeEach(() => {
@@ -17,23 +18,23 @@ Vitest.test('renderPlayerCards should render player cards correctly', () => {
         </ons-carousel-item>
     `;
 
-    const players = new Players();
-    const player1 = Player.createRandomPlayer('alice', 'alice@wonderland.org');
-    players.addPlayer(player1);
+    const party = new Players();
+    const player = new Player('alice', 'alice@wonderland.org');
+    party.addPlayer(player);
 
     const playerCards = document.querySelector("#caiComrades .player-cards") as HTMLElement;
 
     playerView.renderPlayerCardsByName(document.firstElementChild as HTMLElement,
-        "caiComrades", players.players);
+        "caiComrades", party.players);
 
-    Vitest.expect(playerCards.querySelector("ons-card.player-card ons-list ons-list-header.list-item__icon div.left img.avatar")?.getAttribute("src")).toBe(`https://api.dicebear.com/10.x/adventurer/svg?seed=${encodeURIComponent(player1.id)}&size=30&earringsProbability=30`);
+    Vitest.expect(playerCards.querySelector("ons-card.player-card ons-list ons-list-header.list-item__icon div.left img.avatar")?.getAttribute("src")).toBe(`https://api.dicebear.com/10.x/adventurer/svg?seed=${encodeURIComponent(player.id)}&size=30&earringsProbability=30`);
 
-    Vitest.expect(playerCards.querySelector("ons-card ons-list-header div.right[data-property='name']")?.textContent?.trim()).toBe(player1.name);
-    Object.entries(player1).forEach(([property, value]) => {
+    Vitest.expect(playerCards.querySelector("ons-card ons-list-header div.right[data-property='name']")?.textContent?.trim()).toBe(player.name);
+    Object.entries(player).forEach(([property, value]) => {
         if (property.startsWith("_")) {
             return;
         }
-        Vitest.expect(playerCards.querySelector(`ons-list-item.player-stat[data-property='${property}']`)?.textContent.trim()).toBe(`${property.toUpperCase()}: ${value}`);
+        Vitest.expect(playerCards.querySelector(`ons-list-item.player-stat[data-property='${property}']`)?.textContent.trim()).toBe(`${playerStatsIconMap.get(property)}${value}`);
     });
 });
 

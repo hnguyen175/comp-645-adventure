@@ -15,7 +15,7 @@ export default abstract class CarouselItem {
         return this._carouselItem;
     }
 
-    toString(): string {
-        return `name: ${this.constructor.name}, id: ${this.carouselItem.id}`;
-    }
+    // toString(): string {
+    //     return `name: ${this.constructor.name}, id: ${this.carouselItem.id}`;
+    // }
 }

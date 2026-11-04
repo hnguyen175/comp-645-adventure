@@ -68,13 +68,13 @@ export default class LoadGame extends CarouselItem {
         return false;
     }
 
-    loadPlayers(): void {
+    loadParty(): void {
         // Implementation for loading players
         const onsList = must(
             this.carouselItem.querySelector<HTMLElement>("#onslPlayers"),
         );
 
-        AllPlayersList.renderAllPlayersList(
+        AllPlayersList.renderSavedGameList(
             onsList,
             this.playerService,
         );

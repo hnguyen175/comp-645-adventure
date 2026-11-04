@@ -6,9 +6,6 @@ export default class PlayerView {
     renderPlayerCards(carouselItem: HTMLElement, players: Player[], columns: string[] = ['hp', 'str', 'spd', 'mp', 'luk', 'wep', 'cls']): void {
         const anchor = carouselItem.id;
         this.renderPlayerCardsByName(carouselItem, anchor, players, columns);
-        // const playerCards = must(carouselItem.querySelector(`#${anchor} .player-cards`)) as HTMLElement;
-
-        // this.drawPlayerCards(playerCards, players, columns);
     };
 
     renderPlayerCardsByName(carouselItem: HTMLElement, playerCardsContainer: string, players: Player[], columns: string[] = ['hp', 'str', 'spd', 'mp', 'luk', 'wep', 'cls']): void {

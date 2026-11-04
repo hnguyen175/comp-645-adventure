@@ -1,7 +1,7 @@
 import * as Vitest from 'vitest';
 import LoadGame from '../../www/ts/carousel-items/LoadGame';
 import Player from '../../www/ts/Player';
-import Players from '../../www/ts/Party';
+import Party from '../../www/ts/Party';
 import AllPlayersList from '../../www/ts/rendering/AllPlayersList';
 
 const loadGameHtml = '../../www/views/load-game.html?raw';
@@ -34,25 +34,25 @@ Vitest.test('LoadGame should be properly initialized', async () => {
     };
 
     const playerServiceMock = {
-        listPlayersFromStorage: Vitest.vi.fn(() => ["player1@example.com", "player2@example.com"]),
-        loadPlayers: Vitest.vi.fn((email: string) => {
-            const players = new Players();
-            players.addPlayer(new Player("Player1", "player1@example.com"));
-            players.addPlayer(new Player("Player2", "player2@example.com"));
-            players.addDefaultPlayers();
-            return players;
+        listPartyFromStorage: Vitest.vi.fn(() => ["player1@example.com", "player2@example.com"]),
+        loadParty: Vitest.vi.fn((email: string) => {
+            const party = new Party();
+            party.addPlayer(new Player("Player1", "player1@example.com"));
+            party.addPlayer(new Player("Player2", "player2@example.com"));
+            party.addDefaultPlayers();
+            return party;
         }),
     };
 
-    const allPlayersListMock = Vitest.vi.spyOn(AllPlayersList, 'renderAllPlayersList');
+    const allPlayersListMock = Vitest.vi.spyOn(AllPlayersList, 'renderSavedGameList');
 
     const loadGame = await LoadGame.create(navControllerMock as any, playerServiceMock as any);
     Vitest.expect(loadGame).not.toBeNull();
 
-    Vitest.expect(allPlayersListMock).not.toHaveBeenCalled(); // Ensure that renderAllPlayersList is not called during initialization
+    Vitest.expect(allPlayersListMock).not.toHaveBeenCalled(); // Ensure that renderSavedGameList is not called during initialization
 
-    loadGame.loadPlayers(); // Load players to render the list
-    Vitest.expect(allPlayersListMock).toHaveBeenCalled(); // Ensure that renderAllPlayersList is called after loading players
+    loadGame.loadParty(); // Load players to render the list
+    Vitest.expect(allPlayersListMock).toHaveBeenCalled(); // Ensure that renderSavedGameList is not called during initialization
 
     const selectLastItem = loadGame.carouselItem.querySelector<HTMLElement>('#onslPlayers')?.lastElementChild;
     Vitest.expect(selectLastItem?.getAttribute('selected')).toBeNull(); // Ensure it's not selected initially 
@@ -84,9 +84,9 @@ Vitest.test('LoadGame should handle delete icon click', async () => {
     };
 
     const playerServiceMock = {
-        listPlayersFromStorage: Vitest.vi.fn(() => ["player1@example.com", "player2@example.com"]),
-        loadPlayers: Vitest.vi.fn((email: string) => {
-            const players = new Players();
+        listPartyFromStorage: Vitest.vi.fn(() => ["player1@example.com", "player2@example.com"]),
+        loadParty: Vitest.vi.fn((email: string) => {
+            const players = new Party();
             players.addPlayer(new Player("Player1", "player1@example.com"));
             players.addPlayer(new Player("Player2", "player2@example.com"));
             players.addDefaultPlayers();
@@ -94,15 +94,15 @@ Vitest.test('LoadGame should handle delete icon click', async () => {
         }),
     };
 
-    const allPlayersListMock = Vitest.vi.spyOn(AllPlayersList, 'renderAllPlayersList');
+    const allPlayersListMock = Vitest.vi.spyOn(AllPlayersList, 'renderSavedGameList');
 
     const loadGame = await LoadGame.create(navControllerMock as any, playerServiceMock as any);
     Vitest.expect(loadGame).not.toBeNull();
-    Vitest.expect(allPlayersListMock).not.toHaveBeenCalled(); // Ensure that renderAllPlayersList is not called during initialization
+    Vitest.expect(allPlayersListMock).not.toHaveBeenCalled(); // Ensure that renderSavedGameList is not called during initialization
 
     Vitest.expect(loadGame.carouselItem.querySelector<HTMLElement>(".delete-icon")).toBeNull(); // Ensure the delete icon is not present initially
 
-    loadGame.loadPlayers(); // Load players to render the list with delete icons
+    loadGame.loadParty(); // Load players to render the list with delete icons
     Vitest.expect(loadGame.carouselItem.querySelector<HTMLElement>(".delete-icon")).not.toBeNull(); // Ensure the delete icon is present after loading players
     loadGame.carouselItem.querySelector<HTMLElement>(".delete-icon")?.dispatchEvent(new Event('click', { bubbles: true }));
 

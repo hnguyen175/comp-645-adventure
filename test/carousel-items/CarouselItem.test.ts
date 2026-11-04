@@ -31,7 +31,7 @@ Vitest.test("loadElement should load an HTML element from a given path", async (
 
     Vitest.expect(element).toBeInstanceOf(HTMLElement);
     Vitest.expect(testCarouselItem.carouselItem).toBe(element);
-    Vitest.expect(testCarouselItem.toString()).toContain("TestCarouselItem");
+    Vitest.expect(testCarouselItem.constructor.name).toContain("TestCarouselItem");
 });
 
 Vitest.test("loadElement should throw an error for an invalid path", async () => {

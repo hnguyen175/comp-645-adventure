@@ -1,22 +1,61 @@
-import CarouselItem from "./CarouselItem.ts";
 import NavController from "../NavController.ts";
 import PlayerService from "../PlayerService.ts";
-import TemplateGameTasks from "../templates/TemplateGameTasks.ts";
 import loggingProxy from "../utilities/LoggingProxy.ts";
 import must from "../utilities/RequiredField.ts";
+import BaseBattleChallenge from "./BaseBattleChallenge.ts";
+import Player from "../Player.ts";
+import PlayerView from "../rendering/PlayerView.ts";
+import RandomGenerator from "../utilities/RandomGenerator.ts";
+import currentGameState from "../GameState.ts";
 
-export default class Bridge extends CarouselItem {
-    constructor(carouselItem: HTMLElement, private readonly navController: NavController, private readonly playerService: PlayerService) {
-        super(carouselItem);
-    }
+export default class Bridge extends BaseBattleChallenge {
+  constructor(
+    carouselItem: HTMLElement,
+    navController: NavController,
+    playerService: PlayerService,
+    playerView: PlayerView,
+    miniBoss: Player,
+  ) {
+    super(carouselItem, navController, playerService, playerView, miniBoss);
+  }
 
-    static async create(navController: NavController, playerService: PlayerService, template: TemplateGameTasks): Promise<Bridge> {
-        const element = must(await this.loadElement("../views/bridge.html") as HTMLElement);
-        const bridge = loggingProxy(new Bridge(element, navController, playerService));
+  static async create(
+    navController: NavController,
+    playerService: PlayerService,
+    miniBoss: Player = new Player(null, null, null, {
+      hp: RandomGenerator.randomStat(11, 101, 1),
+      spd: RandomGenerator.villainRandomStat(),
+      str: RandomGenerator.villainRandomStat(),
+      mp: RandomGenerator.villainRandomStat(),
+      luk: RandomGenerator.randomLuk(),
+      wep: "Evil " + RandomGenerator.randomWeapon(),
+      cls: "Dark " + RandomGenerator.randomClass(),
+    }),
+  ): Promise<Bridge> {
+    const element = must(
+      (await this.loadElement("../views/bridge.html")) as HTMLElement,
+    );
+    const bridge = loggingProxy(
+      new Bridge(
+        element,
+        navController,
+        playerService,
+        new PlayerView(),
+        miniBoss,
+      ),
+    );
 
-        const footer = must(bridge.carouselItem.querySelector("footer"));
-        footer.after(template.templateFragment);
+    bridge.setupControls(bridge);
 
-        return bridge;
-    }
+    return bridge;
+  }
+
+  public override awardStatsToPlayers(): void {
+    const party = must(currentGameState.getParty());
+    party.players.forEach((player) => {
+      player.luk += RandomGenerator.randomStat(50, 60, 1) / 100;
+      player.mp += RandomGenerator.randomStat(10, 25, 1);
+    });
+    party.addGold(RandomGenerator.randomStat(55, 1234, 1));
+  }
 }
