@@ -1,47 +1,42 @@
 {
-    "security.allowedUNCHosts": [
-        "wsl.localhost"
-    ],
-    "workbench.browser.dataStorage": "global",
-    "update.mode": "none",
-    "workbench.startupEditor": "none",
-    "vim.easymotion": true,
-    "vim.incsearch": true,
-    "vim.useSystemClipboard": true,
-    "vim.useCtrlKeys": false,
-    "vim.hlsearch": true,
-    "vim.handleKeys": {
-        "<C-o>": true,
-        "<C-i>": true,
-    },
-    // To improve performance
-    "extensions.experimental.affinity": {
-        "vscodevim.vim": 1
-    },
-    "git.autofetch": true,
-    "security.workspace.trust.untrustedFiles": "open",
-    "editor.wordWrap": "on",
-    "workbench.editorAssociations": {
-        "*.copilotmd": "vscode.markdown.preview.editor",
-        "*.svg": "imagePreview.previewEditor"
-    },
-    "[html]": {
-        "editor.defaultFormatter": "vscode.html-language-features"
-    },
-    "[typescript]": {
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
-    },
-    "editor.formatOnSave": true,
-    "editor.formatOnType": false,
-    "editor.formatOnPaste": true,
-    "remote.autoForwardPortsSource": "hybrid",
-    "eslint.run": "onSave",
-    "eslint.validate": [
-        "typescript",
-        "typescriptreact",
-        "javascript",
-        "javascriptreact"
-    ],
-    "vs-code-prettier-eslint.prettierLast": false,
-    "vs-code-prettier-eslint.prettierESLintIntegration": true,
+  "security.allowedUNCHosts": ["wsl.localhost"],
+  "workbench.browser.dataStorage": "global",
+  "update.mode": "none",
+  "workbench.startupEditor": "none",
+  "vim.easymotion": true,
+  "vim.incsearch": true,
+  "vim.useSystemClipboard": true,
+  "vim.useCtrlKeys": false,
+  "vim.hlsearch": true,
+  "vim.handleKeys": {
+    "<C-o>": true,
+    "<C-i>": true
+  },
+  // To improve performance
+  "extensions.experimental.affinity": {
+    "vscodevim.vim": 1
+  },
+  "git.autofetch": true,
+  "security.workspace.trust.untrustedFiles": "open",
+  "editor.wordWrap": "on",
+  "workbench.editorAssociations": {
+    "*.copilotmd": "vscode.markdown.preview.editor",
+    "*.svg": "imagePreview.previewEditor"
+  },
+  "editor.formatOnSave": true,
+  "editor.formatOnType": false,
+  "editor.formatOnPaste": true,
+  "remote.autoForwardPortsSource": "hybrid",
+  "eslint.run": "onSave",
+  "eslint.validate": [
+    "typescript",
+    "typescriptreact",
+    "javascript",
+    "javascriptreact"
+  ],
+  "editor.tabSize": 2,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
 }

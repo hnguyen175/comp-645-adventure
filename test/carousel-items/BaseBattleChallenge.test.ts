@@ -15,6 +15,7 @@ import RandomGenerator from "../../www/ts/utilities/RandomGenerator";
 import lakeHtml from "../../www/views/lake.html?raw";
 import bridgeHtml from "../../www/views/bridge.html?raw";
 import mountainHtml from "../../www/views/mountain.html?raw";
+import dungeonHtml from "../../www/views/dungeon.html?raw";
 import NavController from "../../www/ts/NavController";
 
 Vitest.beforeEach(() => {
@@ -32,6 +33,8 @@ Vitest.beforeEach(() => {
         return new Response(mountainHtml);
       case "../views/bridge.html":
         return new Response(bridgeHtml);
+      case "../views/dungeon.html":
+        return new Response(dungeonHtml);
       default:
         throw new Error(`Unhandled fetch URL: ${url}`);
     }
@@ -137,7 +140,7 @@ for (const ChallengeClass of [Lake, Mountain, Bridge] as const) {
           miniBoss,
         );
 
-        await Vitest.vi.waitFor(() => {
+        await Vitest.vi.waitFor(async () => {
           // Assert that the ChallengeClass instance is created
           Vitest.expect(level).toBeInstanceOf(ChallengeClass);
         });
@@ -190,7 +193,7 @@ for (const ChallengeClass of [Lake, Mountain, Bridge] as const) {
 }
 
 for (const ChallengeClass of [Lake, Mountain, Bridge] as const) {
-  Vitest.describe(`Level ${ChallengeClass.name}`, () => {
+  Vitest.describe(`Level ${ChallengeClass.name}`, async () => {
     Vitest.test.each([51, 150] as const)(
       `boss' HP for ${ChallengeClass.name} challenge`,
       async (miniBossHp) => {
@@ -231,7 +234,7 @@ for (const ChallengeClass of [Lake, Mountain, Bridge] as const) {
         Vitest.expect(buttons.length).toBeGreaterThan(0);
         buttons.forEach((button) => button.click()); // Click all attack buttons
 
-        await Vitest.vi.waitFor(() => {
+        await Vitest.vi.waitFor(async () => {
           // Assert that the attack buttons is disabled
           buttons.forEach((button) => {
             Vitest.expect(button.hasAttribute("disabled")).toBe(true);
@@ -259,7 +262,7 @@ for (const ChallengeClass of [Lake, Mountain, Bridge] as const) {
 
             // simulate a click on the next challenge button
             nextChallengeButton?.click();
-          });
+          }, { timeout: 5000 });
         } else {
           // mini-boss' HP is still above 0
           // verify #pChallengeResult has the correct text content

@@ -133,19 +133,41 @@ export default abstract class BaseBattleChallenge extends CarouselItem {
       button.setAttribute("disabled", "true");
     });
 
+    const nextChallenge = await this.navController.createNextChallenge(this);
+
+    this.setupNextChallengeButton(nextChallenge);
+
+    // save to local storage
+    this.saveCurrentGame(nextChallenge);
+  }
+
+  private setupNextChallengeButton(nextChallenge: CarouselItem) {
     const templateFragment = must(tmplGotoNextChallenge.templateFragment);
     const gotoNextButton = templateFragment.querySelector(
-      ".next-challenge-button",
+      ".next-challenge-button"
     )!;
-    const nextChallenge = await this.navController.createNextChallenge(this);
-    gotoNextButton.textContent = nextChallenge.constructor.name;
 
-    gotoNextButton.addEventListener("click", () => {
-      this.carouselItem.replaceWith(nextChallenge.carouselItem);
-    });
+    gotoNextButton.setAttribute("disabled", "true");
+
+    gotoNextButton.textContent = nextChallenge.constructor.name;
 
     const footer = must(this.carouselItem.querySelector("footer"));
     footer.before(templateFragment);
+
+    gotoNextButton.addEventListener("click", () => {
+      console.log(
+        `Navigating to the next challenge: ${nextChallenge.carouselItem.id}`
+      );
+      this.carouselItem.replaceWith(nextChallenge.carouselItem);
+    });
+
+    gotoNextButton.removeAttribute("disabled");
+  }
+
+  private saveCurrentGame(nextChallenge: CarouselItem) {
+    const party = must(currentGameState.getParty());
+    party.currentScreen = nextChallenge.constructor.name;
+    PlayerService.saveActiveParty();
   }
 
   private applyDamageToBoss(statValue: number) {
