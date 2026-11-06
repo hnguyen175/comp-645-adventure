@@ -113,86 +113,92 @@ Vitest.test.each([[Lake], [Mountain], [Bridge]] as const)(
   },
 );
 
-for (const ChallengeClass of [Lake, Mountain, Bridge] as const) {
-  Vitest.describe(`Level ${ChallengeClass.name}`, () => {
-    Vitest.test.each([51, 100, 150] as const)(
-      `boss' HP for ${ChallengeClass.name} challenge`,
-      async (miniBossHp) => {
-        // Mock dependencies
-        const mockPlayerService = {} as any;
-        const mockNavController = new NavController();
-        const mockTemplate = {} as any;
-        const mockGoToNextChallengeTemplate = {} as any;
-        const miniBoss = new Player(null, null, null, {
-          hp: miniBossHp,
-          str: RandomGenerator.randomStat(),
-          spd: RandomGenerator.randomStat(),
-          mp: RandomGenerator.randomStat(),
-          luk: RandomGenerator.randomLuk(),
-          wep: "Evil " + RandomGenerator.randomWeapon(),
-          cls: "Dark " + RandomGenerator.randomClass(),
-        });
+// for (const ChallengeClass of [Lake, Mountain, Bridge] as const) {
+// Vitest.describe(`Level ${ChallengeClass.name}`, () => {
+Vitest.describe.each([
+  [Lake, "You've been slimed"],
+  [Mountain, "Who knew rocks"],
+  [Bridge, "assaulting tollbooth"],
+] as const)("level %s", (ChallengeClass, attackMsg) => {
+  Vitest.test.each([51, 100, 150] as const)(
+    "should display the correct attack message when the boss has %i HP",
+    async (miniBossHp) => {
+      // Mock dependencies
+      const mockPlayerService = {} as any;
+      const mockNavController = new NavController();
+      const mockTemplate = {} as any;
+      const mockGoToNextChallengeTemplate = {} as any;
+      const miniBoss = new Player(null, null, null, {
+        hp: miniBossHp,
+        str: RandomGenerator.randomStat(),
+        spd: RandomGenerator.randomStat(),
+        mp: RandomGenerator.randomStat(),
+        luk: RandomGenerator.randomLuk(),
+        wep: "Evil " + RandomGenerator.randomWeapon(),
+        cls: "Dark " + RandomGenerator.randomClass(),
+      });
 
-        // Call the create method
-        const level = await ChallengeClass.create(
-          mockNavController,
-          mockPlayerService,
-          miniBoss,
-        );
+      // Call the create method
+      const level = await ChallengeClass.create(
+        mockNavController,
+        mockPlayerService,
+        miniBoss,
+      );
 
-        await Vitest.vi.waitFor(async () => {
-          // Assert that the ChallengeClass instance is created
-          Vitest.expect(level).toBeInstanceOf(ChallengeClass);
-        });
+      await Vitest.vi.waitFor(async () => {
+        // Assert that the ChallengeClass instance is created
+        Vitest.expect(level).toBeInstanceOf(ChallengeClass);
+      });
 
-        const gameParty = must(currentGameState.getParty());
-        const initialMiniBossHp = miniBoss.hp;
-        const initialPlayerHP = gameParty.players[0].hp;
+      const gameParty = must(currentGameState.getParty());
+      const initialMiniBossHp = miniBoss.hp;
+      const initialPlayerHP = gameParty.players[0].hp;
 
-        // Click the first attack button
-        const buttons =
-          level.carouselItem.querySelectorAll<HTMLElement>("ons-button");
-        Vitest.expect(buttons.length).toBeGreaterThan(0);
-        buttons[0].click();
+      // Click the first attack button
+      const buttons =
+        level.carouselItem.querySelectorAll<HTMLElement>("ons-button");
+      Vitest.expect(buttons.length).toBeGreaterThan(0);
+      buttons[0].click();
 
-        await Vitest.vi.waitFor(() => {
-          // Assert that the attack button is disabled
-          Vitest.expect(buttons[0].hasAttribute("disabled")).toBe(true);
-        });
+      await Vitest.vi.waitFor(() => {
+        // Assert that the attack button is disabled
+        Vitest.expect(buttons[0].hasAttribute("disabled")).toBe(true);
+      });
 
-        Vitest.expect(miniBoss.hp).toBe(
-          initialMiniBossHp - gameParty.players[0].str,
-        ); // boss' HP - player's str (50) = 1
-        Vitest.expect(gameParty.players[0].hp).toBe(
-          initialPlayerHP - Math.floor(initialPlayerHP * 0.1),
-        ); // player's HP reduced by 10%
+      Vitest.expect(miniBoss.hp).toBe(
+        initialMiniBossHp - gameParty.players[0].str,
+      ); // boss' HP - player's str (50) = 1
+      Vitest.expect(gameParty.players[0].hp).toBe(
+        initialPlayerHP - Math.floor(initialPlayerHP * 0.1),
+      ); // player's HP reduced by 10%
 
-        // ensure the ons-list-item has 'row-flash' style applied to it
-        const playerStatCell = level.carouselItem.querySelector(
+      // ensure the ons-list-item has 'row-flash' style applied to it
+      const playerStatCell = level.carouselItem.querySelector(
+        'ons-list-item[data-property="hp"]',
+      );
+      Vitest.expect(playerStatCell?.classList.contains("row-flash")).toBe(true);
+
+      // also esure boss' ons-list-item has 'row-flash' style applied to it
+      const bossStatCell = [
+        ...level.carouselItem.querySelectorAll(
           'ons-list-item[data-property="hp"]',
-        );
-        Vitest.expect(playerStatCell?.classList.contains("row-flash")).toBe(
-          true,
-        );
+        ),
+      ].at(-1);
+      Vitest.expect(bossStatCell?.classList.contains("row-flash")).toBe(true);
 
-        // also esure boss' ons-list-item has 'row-flash' style applied to it
-        const bossStatCell = [
-          ...level.carouselItem.querySelectorAll(
-            'ons-list-item[data-property="hp"]',
-          ),
-        ].at(-1);
-        Vitest.expect(bossStatCell?.classList.contains("row-flash")).toBe(true);
+      // verify #pChallengeResult has the correct text content
+      const resultElement =
+        level.carouselItem.querySelector("#pChallengeResult");
+      Vitest.expect(resultElement?.textContent).toContain(attackMsg);
+    },
+  );
+});
 
-        // verify #pChallengeResult has the correct text content
-        const resultElement =
-          level.carouselItem.querySelector("#pChallengeResult");
-        Vitest.expect(resultElement?.textContent).toContain("Keep fighting");
-      },
-    );
-  });
-}
-
-for (const ChallengeClass of [Lake, Mountain, Bridge] as const) {
+for (const [ChallengeClass, message] of [
+  [Lake, "thoroughly washed"],
+  [Mountain, "DOWN YOU GO"],
+  [Bridge, "PAYMENT DECLINED"],
+] as const) {
   Vitest.describe(`Level ${ChallengeClass.name}`, async () => {
     Vitest.test.each([51, 150] as const)(
       `boss' HP for ${ChallengeClass.name} challenge`,
@@ -252,23 +258,24 @@ for (const ChallengeClass of [Lake, Mountain, Bridge] as const) {
             "You defeated the",
           );
 
-          await Vitest.vi.waitFor(() => {
-            // verify that the next challenge button is present
-            const nextChallengeButton =
-              level.carouselItem.querySelector<HTMLElement>(
-                ".next-challenge-button",
-              );
-            Vitest.expect(nextChallengeButton).not.toBeNull();
+          await Vitest.vi.waitFor(
+            () => {
+              // verify that the next challenge button is present
+              const nextChallengeButton =
+                level.carouselItem.querySelector<HTMLElement>(
+                  ".next-challenge-button",
+                );
+              Vitest.expect(nextChallengeButton).not.toBeNull();
 
-            // simulate a click on the next challenge button
-            nextChallengeButton?.click();
-          }, { timeout: 5000 });
+              // simulate a click on the next challenge button
+              nextChallengeButton?.click();
+            },
+            { timeout: 5000 },
+          );
         } else {
           // mini-boss' HP is still above 0
           // verify #pChallengeResult has the correct text content
-          Vitest.expect(resultElement?.textContent).toContain(
-            "All your party members have attacked!",
-          );
+          Vitest.expect(resultElement?.textContent).toContain(message);
           Vitest.expect(gameParty.players[0].hp).toBe(
             initialPlayerHP - Math.floor(initialPlayerHP * 0.1),
           );

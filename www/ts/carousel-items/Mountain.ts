@@ -2,7 +2,7 @@ import NavController from "../NavController.ts";
 import PlayerService from "../PlayerService.ts";
 import loggingProxy from "../utilities/LoggingProxy.ts";
 import must from "../utilities/RequiredField.ts";
-import BaseBattleChallenge from "./BaseBattleChallenge.ts";
+import BaseBattleChallenge, { DamageResult } from "./BaseBattleChallenge.ts";
 import PlayerView from "../rendering/PlayerView.ts";
 import Player from "../Player.ts";
 import RandomGenerator from "../utilities/RandomGenerator.ts";
@@ -57,5 +57,31 @@ export default class Mountain extends BaseBattleChallenge {
       player.spd += RandomGenerator.randomStat(10, 25, 1);
     });
     party.addGold(RandomGenerator.randomStat(111, 222, 1));
+  }
+
+  protected attackMessage(
+    playerDamage: DamageResult,
+    villainDamage: DamageResult,
+  ): string {
+    return /*html*/ `
+    CRACK! A thunderous strike deals
+    ${villainDamage.damage} damage to the brute!
+    With ${villainDamage.hp} HP remaining,
+    he's still standing. Apparently, his skull
+    is thicker than the mountain!
+
+    ${`<p>
+      BOULDER DASH! ${playerDamage.name} takes
+      ${playerDamage.damage} damage and has
+      ${playerDamage.hp} HP left.
+      Who knew rocks could be so unfriendly?
+    </p>`}
+  `;
+  }
+
+  protected defeatMessage(villainName: string): string {
+    return /*html*/ `
+    DOWN YOU GO! ${villainName} has sent your party tumbling down the mountain! At least the trip down was faster than the climb!
+  `;
   }
 }

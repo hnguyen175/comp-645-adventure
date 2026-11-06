@@ -2,7 +2,7 @@ import NavController from "../NavController.ts";
 import PlayerService from "../PlayerService.ts";
 import loggingProxy from "../utilities/LoggingProxy.ts";
 import must from "../utilities/RequiredField.ts";
-import BaseBattleChallenge from "./BaseBattleChallenge.ts";
+import BaseBattleChallenge, { DamageResult } from "./BaseBattleChallenge.ts";
 import Player from "../Player.ts";
 import PlayerView from "../rendering/PlayerView.ts";
 import RandomGenerator from "../utilities/RandomGenerator.ts";
@@ -57,5 +57,32 @@ export default class Bridge extends BaseBattleChallenge {
       player.mp += RandomGenerator.randomStat(10, 25, 1);
     });
     party.addGold(RandomGenerator.randomStat(55, 1234, 1));
+  }
+
+  protected attackMessage(
+    playerDamage: DamageResult,
+    villainDamage: DamageResult,
+  ): string {
+    return /*html*/ `
+    WHACK! Your party delivers
+    ${villainDamage.damage} damage to the troll!
+    He has ${villainDamage.hp} HP left,
+    and he's threatening to charge extra
+    for assaulting tollbooth employees!
+
+    ${`<p>
+      CLONK! ${playerDamage.name} takes
+      ${playerDamage.damage} damage and has
+      ${playerDamage.hp} HP remaining.
+      Apparently, that's the bridge toll!
+      No refunds!
+    `}
+  `;
+  }
+
+  protected defeatMessage(villainName: string): string {
+    return /*html*/ `
+    PAYMENT DECLINED! ${villainName} has beaten your party senseless! Sorry, ${villainName}, the toll has already been collected—in bruises!
+  `;
   }
 }

@@ -106,149 +106,36 @@ Vitest.test("Lake constructor should create a Lake instance", async () => {
   });
 });
 
-Vitest.test.each([[51], [100], [150]])(
-  "Lake battle with %i HP mini-boss",
-  async (miniBossHp) => {
-    // Mock dependencies
-    const mockNavController = {} as any;
-    const mockPlayerService = {} as any;
-    const mockTemplate = {} as any;
-    const mockGoToNextChallengeTemplate = {} as any;
-    const miniBoss = new Player(null, null, null, {
-      hp: miniBossHp,
-      str: RandomGenerator.randomStat(),
-      spd: RandomGenerator.randomStat(),
-      mp: RandomGenerator.randomStat(),
-      luk: RandomGenerator.randomLuk(),
-      wep: "Evil " + RandomGenerator.randomWeapon(),
-      cls: "Dark " + RandomGenerator.randomClass(),
-    });
+Vitest.test("awardStatsToPlayers should award stats to players", async () => {
+  const priorAwardedParty = new Party();
+  Object.assign(
+    priorAwardedParty,
+    structuredClone(must(currentGameState.getParty())),
+  );
 
-    // Call the create method
-    const lake = await Lake.create(
-      mockNavController,
-      mockPlayerService,
-      miniBoss,
-    );
+  const lake = await Lake.create({} as any, {} as any);
+  lake.awardStatsToPlayers();
 
-    await Vitest.vi.waitFor(() => {
-      // Assert that the create method was called with the correct arguments
-      // Vitest.expect(Lake.create).toHaveBeenCalledWith(mockNavController, mockPlayerService, mockTemplate, miniBoss);
-      // Assert that the Lake instance is created
-      Vitest.expect(lake).toBeInstanceOf(Lake);
-    });
+  const updatedParty = new Party();
+  Object.assign(
+    updatedParty,
+    structuredClone(must(currentGameState.getParty())),
+  );
 
-    const gameParty = must(currentGameState.getParty());
-    const initialMiniBossHp = miniBoss.hp;
-    const initialPlayerHP = gameParty.players[0].hp;
+  Vitest.expect(updatedParty.earnedGold).toBeGreaterThan(
+    priorAwardedParty.earnedGold,
+  );
 
-    // Click the first attack button
-    const buttons =
-      lake.carouselItem.querySelectorAll<HTMLElement>("ons-button");
-    Vitest.expect(buttons.length).toBeGreaterThan(0);
-    buttons[0].click();
+  updatedParty.players.forEach((player, index) => {
+    const priorPlayer = priorAwardedParty.players[index];
+    Vitest.expect(player.luk).toBeGreaterThan(priorPlayer.luk);
+    Vitest.expect(player.str).toBeGreaterThan(priorPlayer.str);
 
-    await Vitest.vi.waitFor(() => {
-      // Assert that the attack button is disabled
-      Vitest.expect(buttons[0].hasAttribute("disabled")).toBe(true);
-    });
-
-    Vitest.expect(miniBoss.hp).toBe(
-      initialMiniBossHp - gameParty.players[0].str,
-    ); // boss' HP - player's str (50) = 1
-    Vitest.expect(gameParty.players[0].hp).toBe(
-      initialPlayerHP - Math.floor(initialPlayerHP * 0.1),
-    ); // player's HP reduced by 10%
-
-    // ensure the ons-list-item has 'row-flash' style applied to it
-    const playerStatCell = lake.carouselItem.querySelector(
-      'ons-list-item[data-property="hp"]',
-    );
-    Vitest.expect(playerStatCell?.classList.contains("row-flash")).toBe(true);
-
-    // also esure boss' ons-list-item has 'row-flash' style applied to it
-    const bossStatCell = [
-      ...lake.carouselItem.querySelectorAll(
-        'ons-list-item[data-property="hp"]',
-      ),
-    ].at(-1);
-    Vitest.expect(bossStatCell?.classList.contains("row-flash")).toBe(true);
-
-    // verify #pChallengeResult has the correct text content
-    const resultElement = lake.carouselItem.querySelector("#pChallengeResult");
-    Vitest.expect(resultElement?.textContent).toContain("Keep fighting");
-  },
-);
-
-Vitest.test.each([[51], [150]] as const)(
-  "Lake battle with %i HP mini-boss and multiple players",
-  async (miniBossHp) => {
-    // Mock dependencies
-    const mockNavController = {} as any;
-    const mockPlayerService = {} as any;
-    const mockTemplate = {} as any;
-    const mockGoToNextChallengeTemplate = {} as any;
-    const miniBoss = new Player(null, null, null, {
-      hp: miniBossHp,
-      str: RandomGenerator.randomStat(),
-      spd: RandomGenerator.randomStat(),
-      mp: RandomGenerator.randomStat(),
-      luk: RandomGenerator.randomLuk(),
-      wep: "Evil " + RandomGenerator.randomWeapon(),
-      cls: "Dark " + RandomGenerator.randomClass(),
-    });
-
-    // Call the create method
-    const lake = await Lake.create(
-      mockNavController,
-      mockPlayerService,
-      miniBoss,
-    );
-
-    await Vitest.vi.waitFor(() => {
-      // Assert that the create method was called with the correct arguments
-      // Vitest.expect(Lake.create).toHaveBeenCalledWith(mockNavController, mockPlayerService, mockTemplate, miniBoss);
-      // Assert that the Lake instance is created
-      Vitest.expect(lake).toBeInstanceOf(Lake);
-    });
-
-    const gameParty = must(currentGameState.getParty());
-    const initialMiniBossHp = miniBoss.hp;
-    const initialPlayerHP = gameParty.players[0].hp;
-
-    // Click the first attack button
-    const buttons =
-      lake.carouselItem.querySelectorAll<HTMLElement>("ons-button");
-    Vitest.expect(buttons.length).toBeGreaterThan(0);
-    buttons[0].click();
-    // 2nd attack
-    buttons[1].click();
-
-    await Vitest.vi.waitFor(() => {
-      // Assert that the attack button is disabled
-      Vitest.expect(buttons[0].hasAttribute("disabled")).toBe(true);
-      Vitest.expect(buttons[1].hasAttribute("disabled")).toBe(true);
-    });
-
-    const resultElement = lake.carouselItem.querySelector("#pChallengeResult");
-
-    // players' strengths win out
-    if (miniBossHp < 100) {
-      Vitest.expect(miniBoss.hp).toBe(0);
-      // verify #pChallengeResult has the correct text content
-      Vitest.expect(resultElement?.textContent).toContain("You defeated the");
-    } else {
-      // mini-boss' HP is still above 0
-      // verify #pChallengeResult has the correct text content
-      Vitest.expect(resultElement?.textContent).toContain(
-        "All your party members have attacked!",
-      );
-      Vitest.expect(gameParty.players[0].hp).toBe(
-        initialPlayerHP - Math.floor(initialPlayerHP * 0.1),
-      );
-      Vitest.expect(gameParty.players[1].hp).toBe(
-        initialPlayerHP - Math.floor(initialPlayerHP * 0.1),
-      );
-    }
-  },
-);
+    // Ensure other stats remain unchanged
+    Vitest.expect(player.hp).toBe(priorPlayer.hp);
+    Vitest.expect(player.spd).toBe(priorPlayer.spd);
+    Vitest.expect(player.mp).toBe(priorPlayer.mp);
+    Vitest.expect(player.wep).toBe(priorPlayer.wep);
+    Vitest.expect(player.cls).toBe(priorPlayer.cls);
+  });
+});
