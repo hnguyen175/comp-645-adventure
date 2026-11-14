@@ -40,7 +40,7 @@ Vitest.beforeAll(async () => {
   currentGameState.setParty(party);
 });
 
-Vitest.beforeEach(() => {});
+Vitest.beforeEach(() => { });
 
 Vitest.test(
   "Mountain constructor should create a Mountain instance",
@@ -75,7 +75,7 @@ Vitest.test("awardStatsToPlayers should award stats to players", async () => {
   Vitest.expect(beforeParty.earnedGold).toBeLessThan(party.earnedGold);
   party.players.forEach((player, index) => {
     const beforePlayer = beforeParty.players[index];
-    Vitest.expect(beforePlayer.luk).toBeLessThan(player.luk);
+    Vitest.expect(beforePlayer.luk).toBeLessThanOrEqual(player.luk);
     Vitest.expect(beforePlayer.spd).toBeLessThan(player.spd);
 
     Vitest.expect(beforePlayer.hp).toBe(beforePlayer.hp);

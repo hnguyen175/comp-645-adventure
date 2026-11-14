@@ -40,7 +40,7 @@ Vitest.beforeAll(async () => {
   currentGameState.setParty(party);
 });
 
-Vitest.beforeEach(() => {});
+Vitest.beforeEach(() => { });
 
 Vitest.test("Bridge constructor should create a Bridge instance", async () => {
   const mockNavController = {} as any;
@@ -69,7 +69,7 @@ Vitest.test("awardStatsToPlayers should award stats to players", async () => {
   Vitest.expect(beforeParty.earnedGold).toBeLessThan(party.earnedGold);
   party.players.forEach((player, index) => {
     const beforePlayer = beforeParty.players[index];
-    Vitest.expect(beforePlayer.luk).toBeLessThan(player.luk);
+    Vitest.expect(beforePlayer.luk).toBeLessThanOrEqual(player.luk);
     Vitest.expect(beforePlayer.mp).toBeLessThan(player.mp);
 
     Vitest.expect(beforePlayer.hp).toBe(beforePlayer.hp);

@@ -53,7 +53,7 @@ export default class Lake extends BaseBattleChallenge {
   public override awardStatsToPlayers(): void {
     const party = must(currentGameState.getParty());
     party.players.forEach((player) => {
-      player.luk += RandomGenerator.playerRandomStat() / 100;
+      player.luk += Math.trunc(RandomGenerator.playerRandomStat() / 100);
       player.str += RandomGenerator.randomStat(10, 25, 1);
     });
     party.addGold(RandomGenerator.randomStat(999, 1234, 1));

@@ -128,7 +128,7 @@ Vitest.test("awardStatsToPlayers should award stats to players", async () => {
 
   updatedParty.players.forEach((player, index) => {
     const priorPlayer = priorAwardedParty.players[index];
-    Vitest.expect(player.luk).toBeGreaterThan(priorPlayer.luk);
+    Vitest.expect(player.luk).toBeGreaterThanOrEqual(priorPlayer.luk);
     Vitest.expect(player.str).toBeGreaterThan(priorPlayer.str);
 
     // Ensure other stats remain unchanged

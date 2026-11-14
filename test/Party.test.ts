@@ -28,6 +28,8 @@ Vitest.test("addDefaultPlayers adds two default players to the players array", (
 Vitest.test("savePlayersToStorage saves players to storage", () => {
     const party = new Party();
     party.addGold(100);
+    party.escapeTimer = 30;
+    party.inventory = "Sword, Shield";
     const player1 = new Player();
     const player2 = new Player();
     party.addPlayer(player1);
@@ -40,7 +42,10 @@ Vitest.test("savePlayersToStorage saves players to storage", () => {
     Vitest.expect(savedParty!.players[0]).toEqual(player1);
     Vitest.expect(savedParty!.players[1]).toEqual(player2);
     Vitest.expect(savedParty!.earnedGold).toBe(100);
+    Vitest.expect(savedParty!.escapeTimer).toBe(30);
     Vitest.expect(savedParty!.currentScreen).toBe('DrunkenTavern');
+    Vitest.expect(savedParty!.inventory).toBe('Sword, Shield');
+    Vitest.expect(savedParty?.averageLuk()).toBe(Math.round((player1.luk + player2.luk) / 2));
 });
 
 Vitest.test("loadPlayersFromStorage loads players from storage", () => {

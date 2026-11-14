@@ -120,8 +120,9 @@ export default class FangornForest extends CarouselItem {
 
   private grantGold(): number {
     const tmpGold = Math.floor(Math.random() * 235) + 999;
-    const party = must(currentGameState?.getParty());
+    const party = must(currentGameState.getParty());
     party.addGold(tmpGold);
+    party.inventory = this.fangornForestCharacter.item;
     return tmpGold;
   }
 

@@ -19,6 +19,7 @@ import Mountain from "./carousel-items/Mountain.ts";
 import Lake from "./carousel-items/Lake.ts";
 import Bridge from "./carousel-items/Bridge.ts";
 import Dungeon from "./carousel-items/Dungeon.ts";
+import Final from "./carousel-items/Final.ts";
 
 interface CarouselChangeEvent extends Event {
   carousel: ons.OnsCarouselElement;
@@ -250,6 +251,10 @@ export default class NavController {
         const dungeon = await Dungeon.create(this, this.playerService);
         await this.addCarouselItem(dungeon);
         break;
+      case "Final":
+        const final = await Final.create();
+        await this.addCarouselItem(final);
+        break;
       default:
         throw new Error(
           `Unknown currentScreen: ${must(currentGameState.getParty())?.currentScreen}`,
@@ -341,6 +346,8 @@ export default class NavController {
         return await Bridge.create(this, this.playerService);
       case Bridge.name:
         return await Dungeon.create(this, this.playerService);
+      case Dungeon.name:
+        return await Final.create();
       default:
         throw new Error(
           `Unknown carousel item type: ${carouselItem.constructor.name}`,

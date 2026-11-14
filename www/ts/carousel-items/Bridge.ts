@@ -53,7 +53,7 @@ export default class Bridge extends BaseBattleChallenge {
   public override awardStatsToPlayers(): void {
     const party = must(currentGameState.getParty());
     party.players.forEach((player) => {
-      player.luk += RandomGenerator.randomStat(50, 60, 1) / 100;
+      player.luk += Math.trunc(RandomGenerator.randomStat(50, 60, 1) / 100);
       player.mp += RandomGenerator.randomStat(10, 25, 1);
     });
     party.addGold(RandomGenerator.randomStat(55, 1234, 1));
