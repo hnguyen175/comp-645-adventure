@@ -34,11 +34,12 @@ export default class NavController {
   comrades!: Comrades;
   drunkenTavern!: DrunkenTavern;
   forest!: FangornForest;
+  dungeon!: Dungeon;
 
   constructor(
     private playerService: PlayerService = loggingProxy(new PlayerService()),
     private playerView: PlayerView = new PlayerView(),
-  ) { }
+  ) {}
 
   async init(): Promise<void> {
     const carousel = document.getElementById(
@@ -93,6 +94,9 @@ export default class NavController {
         break;
       case "caiLoadGame":
         this.priorLoadGame();
+        break;
+      case "caiDungeon":
+        must(this.dungeon)?.onPostDisplayingItem();
         break;
     }
   }
@@ -248,8 +252,8 @@ export default class NavController {
         await this.addCarouselItem(mountain);
         break;
       case "Dungeon":
-        const dungeon = await Dungeon.create(this, this.playerService);
-        await this.addCarouselItem(dungeon);
+        this.dungeon = await Dungeon.create(this, this.playerService);
+        await this.addCarouselItem(this.dungeon);
         break;
       case "Final":
         const final = await Final.create();
@@ -345,7 +349,8 @@ export default class NavController {
       case Mountain.name:
         return await Bridge.create(this, this.playerService);
       case Bridge.name:
-        return await Dungeon.create(this, this.playerService);
+        this.dungeon = await Dungeon.create(this, this.playerService);
+        return this.dungeon;
       case Dungeon.name:
         return await Final.create();
       default:

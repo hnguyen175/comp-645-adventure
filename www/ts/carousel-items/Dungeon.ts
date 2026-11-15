@@ -6,6 +6,7 @@ import GameTasks from "../templates/GameTasks.ts";
 import PlayerView from "../rendering/PlayerView.ts";
 import currentGameState from "../GameState.ts";
 import { fireAndForget } from "../utilities/AsyncUtils.ts";
+import loggingProxy from "../utilities/LoggingProxy.ts";
 
 export default class Dungeon extends CarouselItem {
   private constructor(
@@ -23,7 +24,9 @@ export default class Dungeon extends CarouselItem {
     playerService: PlayerService,
   ): Promise<Dungeon> {
     const element = must(await this.loadElement("../views/dungeon.html"));
-    const dungeon = new Dungeon(element, navController, playerService);
+    const dungeon = loggingProxy(
+      new Dungeon(element, navController, playerService),
+    );
     const party = must(currentGameState.getParty());
 
     dungeon.playerView.renderPlayerCards(
@@ -38,10 +41,6 @@ export default class Dungeon extends CarouselItem {
 
     const footer = must(dungeon.carouselItem.querySelector("footer"));
     footer.after(GameTasks.instance.templateFragment);
-
-    const timer = dungeon.timerSetup();
-
-    dungeon.registerEvents(timer);
 
     return dungeon;
   }
@@ -59,26 +58,29 @@ export default class Dungeon extends CarouselItem {
 
         const pDunEnemy = must(this.carouselItem.querySelector("#pDunEnemy"));
         if (this.timer >= 9) {
-          pDunEnemy.innerHTML =
-            "You have successfully escaped the dungeon!";
+          pDunEnemy.innerHTML = "You have successfully escaped the dungeon!";
         } else if (this.timer >= 3) {
-          pDunEnemy.innerHTML =
-            "You have escaped the dungeon!";
+          pDunEnemy.innerHTML = "You have escaped the dungeon!";
         } else {
-          pDunEnemy.innerHTML =
-            "You have barely escaped the dungeon!";
+          pDunEnemy.innerHTML = "You have barely escaped the dungeon!";
         }
       },
       { once: true },
     );
   }
 
+  public onPostDisplayingItem(): void {
+    const timer = this.timerSetup();
+    this.registerEvents(timer);
+  }
+
   private async transitionToNextChallenge(): Promise<void> {
     window.setTimeout(async () => {
-      const nextChallenge = await this.navController.createNextChallenge(this);
-
       const party = must(currentGameState.getParty());
       party.escapeTimer = this.timer;
+
+      const nextChallenge = await this.navController.createNextChallenge(this);
+
       party.currentScreen = nextChallenge.constructor.name;
       PlayerService.saveActiveParty();
 
@@ -97,7 +99,7 @@ export default class Dungeon extends CarouselItem {
         this.disableActionButton();
 
         must(this.carouselItem.querySelector("#pDunEnemy")).innerHTML =
-          "The roof has collapsed! You have failed to escape in time.";
+          "The roof has collapsed! You have failed to escape the dungeon.";
 
         must(this.carouselItem.querySelector("#pDunResult")).innerHTML =
           "You have lost the game. Please start a new game.";

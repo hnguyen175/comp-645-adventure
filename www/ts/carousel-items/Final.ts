@@ -3,6 +3,7 @@ import must from "../utilities/RequiredField.ts";
 import CarouselItem from "./CarouselItem.ts";
 import currentGameState from "../GameState.ts";
 import { Grade } from "../Party.ts";
+import loggingProxy from "../utilities/LoggingProxy.ts";
 
 export default class Final extends CarouselItem {
   private constructor(carouselItem: HTMLElement) {
@@ -15,7 +16,7 @@ export default class Final extends CarouselItem {
     const footer = must(element.querySelector("footer"));
     footer.after(GameTasks.instance.templateFragment);
 
-    const final = new Final(element);
+    const final = loggingProxy(new Final(element));
     final.showFinalResults();
 
     return final;

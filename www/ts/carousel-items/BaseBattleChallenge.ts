@@ -18,7 +18,7 @@ export type DamageResult = {
 export default abstract class BaseBattleChallenge extends CarouselItem {
   constructor(
     carouselItem: HTMLElement,
-    private readonly navController: NavController,
+    protected readonly navController: NavController,
     private readonly playerService: PlayerService,
     private readonly playerView: PlayerView,
     private miniBoss: Player,
@@ -185,6 +185,7 @@ export default abstract class BaseBattleChallenge extends CarouselItem {
         `Navigating to the next challenge: ${nextChallenge.carouselItem.id}`,
       );
       this.carouselItem.replaceWith(nextChallenge.carouselItem);
+      this.initializeDisplay?.();
     });
 
     gotoNextButton.removeAttribute("disabled");
@@ -262,4 +263,5 @@ export default abstract class BaseBattleChallenge extends CarouselItem {
     villainDamage: DamageResult | undefined,
   ): string;
   protected abstract defeatMessage(villainName: string): string;
+  protected initializeDisplay(): void {}
 }

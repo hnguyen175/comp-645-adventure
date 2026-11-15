@@ -21,6 +21,7 @@ import lakeHtml from "../www//views/lake.html?raw";
 import bridgeHtml from "../www/views/bridge.html?raw";
 import mountainHtml from "../www/views/mountain.html?raw";
 import dungeonHtml from "../www/views/dungeon.html?raw";
+import finalHtml from "../www/views/final.html?raw";
 import must from "../www/ts/utilities/RequiredField";
 import CarouselItem from "../www/ts/carousel-items/CarouselItem";
 
@@ -125,6 +126,9 @@ Vitest.beforeEach(async () => {
     if (url === "../views/dungeon.html") {
       return new Response(dungeonHtml);
     }
+    if (url === "../views/final.html") {
+      return new Response(finalHtml);
+    }
 
     throw new Error(`Unexpected fetch URL: ${url}`);
   });
@@ -164,7 +168,7 @@ Vitest.test("showSection logs an error if no sections are found", () => {
   // Spy on console.error
   const consoleErrorSpy = Vitest.vi
     .spyOn(console, "error")
-    .mockImplementation(() => { });
+    .mockImplementation(() => {});
   NavController.showSection("section1");
   Vitest.expect(consoleErrorSpy).toHaveBeenCalled();
 
@@ -203,7 +207,7 @@ Vitest.test("onCarouselPriorDisplayingItem prior displaying players", () => {
 
   const renderPlayerCardsSpy = Vitest.vi
     .spyOn(playerView, "renderPlayerCards")
-    .mockImplementation(() => { });
+    .mockImplementation(() => {});
 
   navController.onCarouselPriorDisplayingItem(event);
 
@@ -234,7 +238,7 @@ Vitest.test(
       });
     const renderPlayerCardsSpy = Vitest.vi
       .spyOn(playerView, "renderPlayerCards")
-      .mockImplementation(() => { });
+      .mockImplementation(() => {});
 
     await navController.onCarouselPriorDisplayingItem(event).catch((error) => {
       Vitest.expect(error.message).toBe("required value was not found");
@@ -275,7 +279,7 @@ Vitest.test(
       });
     const consoleErrorSpy = Vitest.vi
       .spyOn(console, "error")
-      .mockImplementation(() => { });
+      .mockImplementation(() => {});
 
     navController.onCarouselPriorDisplayingItem(event);
 
@@ -305,7 +309,7 @@ Vitest.test(
 
     const renderAllPlayersSpy = Vitest.vi
       .spyOn(AllPlayersList, "renderSavedGameList")
-      .mockImplementation(() => { });
+      .mockImplementation(() => {});
 
     Vitest.expect(
       document.getElementById(navController.comrades.carouselItem.id),
@@ -315,6 +319,40 @@ Vitest.test(
     Vitest.expect(renderAllPlayersSpy).toHaveBeenCalledOnce();
   },
 );
+
+Vitest.test("onCarouselPostDisplayingItem post Dungeon", async () => {
+  Vitest.vi.spyOn(currentGameState, "getParty").mockImplementation(() => {
+    const party = new Party();
+    party.currentScreen = "Dungeon";
+    party.players = [new Player()];
+    return party;
+  });
+  await navController.onGameStart();
+
+  navController.loadCarouselItem([
+    navController.welcome,
+    navController.loadGame,
+    navController.dungeon,
+  ]);
+
+  const carousel = document.getElementById(
+    "carouselNewGame",
+  ) as unknown as HTMLElement;
+
+  const spyItem = Vitest.vi
+    .spyOn(navController.dungeon, "onPostDisplayingItem")
+    .mockImplementation(() => Vitest.vi.fn());
+
+  const event = new Event("prechange");
+  Object.assign(event, {
+    carousel,
+    activeIndex: 2,
+  });
+  await navController.onCarouselPriorDisplayingItem(event);
+
+  Vitest.expect(navController.dungeon).not.toBeNull();
+  Vitest.expect(spyItem).toHaveBeenCalledOnce();
+});
 
 Vitest.test("onCarouselNewGame navigates to next carousel item", async () => {
   navController.loadCarouselItem([
@@ -342,7 +380,7 @@ Vitest.test(
             <ons-button class="btn js-load-game" id="btnNewGame">New Game</ons-button>
         </ons-card>
         `;
-    Vitest.vi.spyOn(console, "error").mockImplementation(() => { });
+    Vitest.vi.spyOn(console, "error").mockImplementation(() => {});
 
     await Vitest.expect(navController.init()).rejects.toThrow(
       "Carousel element not found.",
@@ -421,7 +459,7 @@ Vitest.test(
     ) as unknown as HTMLElement;
     btnRoll.addEventListener("click", () => navController.onRollButtonClick());
 
-    Vitest.vi.spyOn(console, "error").mockImplementation(() => { });
+    Vitest.vi.spyOn(console, "error").mockImplementation(() => {});
 
     btnRoll.click();
 
@@ -621,11 +659,14 @@ Vitest.test(
     const carousel = document.getElementById(
       "carouselNewGame",
     ) as unknown as CarouselElement;
-    navController.loadCarouselItem([navController.welcome, navController.loadGame]);
+    navController.loadCarouselItem([
+      navController.welcome,
+      navController.loadGame,
+    ]);
 
     Vitest.vi
       .spyOn(playerService, "deletePlayers")
-      .mockImplementation((email: string): void => { });
+      .mockImplementation((email: string): void => {});
     const loadPlayersSpy = Vitest.vi
       .spyOn(navController.loadGame, "loadParty")
       .mockImplementation(() => Vitest.vi.fn());
@@ -651,7 +692,7 @@ Vitest.test(
 
     Vitest.vi
       .spyOn(playerService, "deletePlayers")
-      .mockImplementation((email: string): void => { });
+      .mockImplementation((email: string): void => {});
     const loadPlayersSpy = Vitest.vi
       .spyOn(navController.loadGame, "loadParty")
       .mockImplementation(() => Vitest.vi.fn());
@@ -682,7 +723,7 @@ Vitest.test(
       });
     Vitest.vi
       .spyOn(playerService, "deletePlayers")
-      .mockImplementation((email: string): void => { });
+      .mockImplementation((email: string): void => {});
     const loadPlayersSpy = Vitest.vi
       .spyOn(navController.loadGame, "loadParty")
       .mockImplementation(() => Vitest.vi.fn());
@@ -807,10 +848,11 @@ Vitest.test(
 Vitest.test.each([
   ["DrunkenTavern", ["FangornForest"]],
   ["FangornForest", ["Lake", "Bridge", "Mountain"]],
-  ["Lake", []],
-  ["Bridge", []],
-  ["Mountain", []],
-  ["Dungeon", []],
+  ["Lake", ["Mountain"]],
+  ["Bridge", ["Dungeon"]],
+  ["Mountain", ["Bridge"]],
+  ["Dungeon", ["Final"]],
+  ["Final", []],
 ] as const)("onGameStart for %s", async (screenName, nextScreens) => {
   // Vitest.test("onGameStart for DrunkenTavern", async () => {
   Vitest.vi.spyOn(currentGameState, "getParty").mockImplementation(() => {
